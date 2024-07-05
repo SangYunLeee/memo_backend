@@ -3,8 +3,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
+import { UsersModule } from './modules/users/users.module';
 @Module({
-  imports: [CommonModule],
+  imports: [CommonModule, UsersModule],
   controllers: [AppController],
   providers: [
     AppService,
