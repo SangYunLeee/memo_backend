@@ -1,0 +1,8 @@
+{
+  "name": "memo_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/SangYunLeee/memo_backend.git",
+  "author": "sangyun lee <sororiri@gmail.com>",
+  "license": "MIT"
+}

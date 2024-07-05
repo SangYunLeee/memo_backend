@@ -1,0 +1,41 @@
+// https://dbdiagram.io/d/%EC%B9%B4%ED%94%BC%EB%B3%B8-668519aa9939893daeebf14d
+
+table users as u {
+  id integer [pk, increment]
+  nickname varchar(100) [not null, unique]
+  email varchar(100) [not null, unique]
+  password varchar(100) [not null]
+  created_at datetime [not null, default: `now()`]
+  role varchar(10) [ default: '']
+}
+
+table posts as p {
+  id integer [pk, increment]
+  users_id integer [ref: > u.id, not null]
+  title varchar(300) [not null]
+  content varchar(6000) [not null]
+  cate_id integer [ref: > cate.id]
+  thumnail_img_url varchar(1000)
+  created_at datetime [not null, default: `now()`]
+}
+
+table categories as cate {
+  id integer [pk, increment]
+  pos integer
+  users_id integer [ref: > u.id]
+  category_name varchar(150) [not null]
+  Indexes {
+    (users_id, category_name) [unique]
+  }
+  Indexes {
+    (users_id, pos) [unique]
+  }
+}
+
+table comments as cmt {
+  id integer [pk, increment]
+  posts_id integer [ref: > p.id]
+  users_id integer [ref: > u.id]
+  content varchar(1000) [not null]
+  created_at datetime [not null, default: `now()`]
+}
