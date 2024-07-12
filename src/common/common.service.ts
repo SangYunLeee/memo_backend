@@ -61,7 +61,9 @@ export class CommonService {
         ? results[results.length - 1]
         : null;
 
-    const nextUrl = lastItem && new URL(`${process.env.BASE_URL}/${path}`);
+    const nextUrl =
+      lastItem &&
+      new URL(`${process.env.BASE_URL}:${process.env.SERVER_PORT}/${path}`);
 
     if (lastItem) {
       for (const key of Object.keys(dto)) {
