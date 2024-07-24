@@ -49,12 +49,22 @@ export class AuthController {
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     });
-    return response.json({ message: 'Login successful', ...token });
+    return response.json({ message: '로그인 성공', ...token });
   }
 
   @Post('register/email')
   @IsPublic()
-  registerWithEmail(@Body() user: RegisterUserDto) {
-    return this.authService.registerWithEmail(user);
+  async registerWithEmail(
+    @Body() user: RegisterUserDto,
+    @Res() response: Response,
+  ) {
+    const token = await this.authService.registerWithEmail(user);
+    response.cookie('accessToken', token.accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
+    });
+    return response.json({ message: '회원가입 성공', ...token });
   }
 }
