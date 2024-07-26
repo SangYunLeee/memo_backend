@@ -8,6 +8,12 @@ import { PostsModule } from './modules/posts/posts.module';
 @Module({
   imports: [CommonModule, AuthModule, PostsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ClassSerializerInterceptor,
+    },
+  ],
 })
 export class AppModule {}

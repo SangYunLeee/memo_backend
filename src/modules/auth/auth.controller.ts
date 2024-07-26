@@ -1,10 +1,9 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
-import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -38,18 +37,8 @@ export class AuthController {
 
   @Post('login/email')
   @IsPublic()
-  async loginWithEmail(
-    @Body() user: Pick<UsersModel, 'email' | 'password'>,
-    @Res() response: Response,
-  ) {
-    const token = await this.authService.loginWithEmail(user);
-    response.cookie('accessToken', token.accessToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'strict',
-      maxAge: 24 * 60 * 60 * 1000, // 1 day
-    });
-    return response.json({ message: 'Login successful', ...token });
+  loginWithEmail(@Body() user: Pick<UsersModel, 'email' | 'password'>) {
+    return this.authService.loginWithEmail(user);
   }
 
   @Post('register/email')
