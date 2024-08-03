@@ -5,6 +5,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { CommonModule } from './common/common.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { LogInterceptor } from './common/interceptor/log.interceptor';
 @Module({
   imports: [CommonModule, AuthModule, PostsModule],
   controllers: [AppController],
@@ -13,6 +14,10 @@ import { PostsModule } from './modules/posts/posts.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LogInterceptor,
     },
   ],
 })

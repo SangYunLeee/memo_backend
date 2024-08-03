@@ -16,20 +16,20 @@ export class LogInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const now = Date.now();
     console.log(
-      `[REQ] ${myUUID} ${req.originalUrl} ${new Date(now).toLocaleString('ko')}`,
+      `[REQ START] ${myUUID} ${req.originalUrl} ${new Date(now).toLocaleString('ko')}`,
     );
     return next.handle().pipe(
       catchError(async (e: HttpException) => {
         console.error(`[ERR] ${myUUID} ${req.originalUrl}`);
         console.error(`stack: \n ${e.stack}`);
         console.log(
-          `[RES] ${myUUID} ${req.originalUrl} ${new Date().toLocaleString('ko')} ${Date.now() - now}ms`,
+          `[RES END] ${myUUID} ${req.originalUrl} ${new Date().toLocaleString('ko')} ${Date.now() - now}ms`,
         );
         throw e;
       }),
       tap((observable) => {
         console.log(
-          `[RES] ${myUUID} ${req.originalUrl} ${new Date().toLocaleString('ko')} ${Date.now() - now}ms`,
+          `[RES END] ${myUUID} ${req.originalUrl} ${new Date().toLocaleString('ko')} ${Date.now() - now}ms`,
         );
       }),
     );
