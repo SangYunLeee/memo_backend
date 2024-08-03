@@ -50,7 +50,8 @@ export class AuthService {
 
   async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
     const existingUser = await this.authenticateUserWithEmail(user);
-    return this.loginToken(existingUser);
+    const token = this.loginToken(existingUser);
+    return { user: existingUser, token };
   }
 
   async registerWithEmail(user: RegisterUserDto) {
@@ -58,11 +59,11 @@ export class AuthService {
       user.password,
       Number(process.env.HASH_ROUNDS),
     );
-    const newUser = await this.usersService.createUser({
+    await this.usersService.createUser({
       ...user,
       password: hash,
     });
-    return this.loginToken(newUser);
+    return await this.loginWithEmail(user);
   }
 
   extractTokenFromHeader(header: string, isBearer: boolean) {

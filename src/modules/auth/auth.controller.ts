@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
@@ -37,6 +37,7 @@ export class AuthController {
 
   @Post('login/email')
   @IsPublic()
+  @HttpCode(HttpStatus.OK)
   loginWithEmail(@Body() user: Pick<UsersModel, 'email' | 'password'>) {
     return this.authService.loginWithEmail(user);
   }
