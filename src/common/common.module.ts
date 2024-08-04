@@ -1,8 +1,15 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    DatabaseModule,
+    ConfigModule.forRoot({
+      envFilePath: ['.env', '.env.dev'],
+      isGlobal: true,
+    }),
+  ],
   controllers: [],
   providers: [],
   exports: [],
