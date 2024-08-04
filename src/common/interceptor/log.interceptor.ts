@@ -15,9 +15,15 @@ export class LogInterceptor implements NestInterceptor {
     const myUUID = generateShortUUID();
     const req = context.switchToHttp().getRequest();
     const now = Date.now();
-    console.log(
-      `[REQ START] ${myUUID} ${req.originalUrl} ${new Date(now).toLocaleString('ko')}`,
-    );
+    console.log(`<REQ> ${myUUID}
+  path      : ${req.originalUrl}
+  starttime : ${new Date(now).toLocaleString('ko')}
+  method    : ${req.method}
+  ip        : ${req.ip}
+  body      : ${JSON.stringify(req.body)}
+  query     : ${JSON.stringify(req.query)}
+<REQ/>
+  `);
     return next.handle().pipe(
       catchError(async (e: HttpException) => {
         console.error(`[ERR] ${myUUID} ${req.originalUrl}`);
