@@ -5,7 +5,7 @@ table users as u {
   nickname varchar(100) [not null, unique]
   email varchar(100) [not null, unique]
   password varchar(100) [not null]
-  created_at datetime [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
   role varchar(10) [ default: '']
 }
 
@@ -16,7 +16,7 @@ table posts as p {
   content varchar(6000) [not null]
   cate_id integer [ref: > cate.id]
   thumnail_img_url varchar(1000)
-  created_at datetime [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
 }
 
 table categories as cate {
@@ -24,12 +24,7 @@ table categories as cate {
   pos integer
   users_id integer [ref: > u.id]
   category_name varchar(150) [not null]
-  Indexes {
-    (users_id, category_name) [unique]
-  }
-  Indexes {
-    (users_id, pos) [unique]
-  }
+  parent_cate_id integer [ref: > cate.id]
 }
 
 table comments as cmt {
@@ -37,5 +32,5 @@ table comments as cmt {
   posts_id integer [ref: > p.id]
   users_id integer [ref: > u.id]
   content varchar(1000) [not null]
-  created_at datetime [not null, default: `now()`]
+  created_at timestamp [not null, default: `now()`]
 }
