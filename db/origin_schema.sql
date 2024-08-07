@@ -12,6 +12,7 @@ CREATE TABLE "posts" (
   "users_id" integer NOT NULL,
   "title" varchar(300) NOT NULL,
   "content" varchar(6000) NOT NULL,
+  "content_slate" varchar(6000),
   "cate_id" integer,
   "thumnail_img_url" varchar(1000),
   "created_at" timestamp NOT NULL DEFAULT (now())
