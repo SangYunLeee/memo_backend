@@ -24,4 +24,11 @@ export class PostsModel extends BaseModel {
   })
   @IsString()
   content: string;
+
+  @Column({
+    length: 6000,
+    name: 'content_slate',
+  })
+  @IsString()
+  content_slate: string;
 }

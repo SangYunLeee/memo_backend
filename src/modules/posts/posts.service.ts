@@ -102,6 +102,12 @@ export class PostsService {
         {
           title: `임의 제목: ${i}`,
           content: `임의 내용:  ${i}`,
+          content_slate: JSON.stringify([
+            {
+              type: 'paragraph',
+              children: [{ text: `${i} 임의 내용` }],
+            },
+          ]),
         },
         userId,
       );
