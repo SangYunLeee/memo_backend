@@ -20,7 +20,7 @@ export class AuthService {
     };
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET,
-      expiresIn: isRefreshToken ? '7d' : '1d',
+      expiresIn: isRefreshToken ? '100d' : '30d',
     });
   }
 

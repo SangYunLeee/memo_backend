@@ -2,15 +2,15 @@ import { Controller } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersModel } from './entity/users.entity';
 import { Get, Param, Body, Post } from '@nestjs/common';
+import { User } from './decorator/user.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  createUser(@Body() user: UsersModel): Promise<UsersModel> {
-    console.log('user', user);
-    return this.usersService.createUser(user);
+  @Get('me')
+  getMyUser(@User() user: UsersModel): { user: UsersModel } {
+    return { user };
   }
 
   @Get(':id')
