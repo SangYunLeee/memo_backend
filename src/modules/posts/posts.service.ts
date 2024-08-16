@@ -85,8 +85,7 @@ export class PostsService {
     }
 
     const newPost = await this.postsRepository.save(post);
-
-    return newPost;
+    return await this.getPostById(newPost.id);
   }
 
   async paginatePosts(dto: PaginatePostDto) {

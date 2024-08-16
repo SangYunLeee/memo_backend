@@ -22,20 +22,21 @@ export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  createPost(@Body() postDto: CreatePostDto, @User('id') userId: number) {
-    return this.postsService.createPost(postDto, userId);
+  async createPost(@Body() postDto: CreatePostDto, @User('id') userId: number) {
+    const post = await this.postsService.createPost(postDto, userId);
+    return { post };
   }
 
   @Get()
   @IsPublic()
   getPosts(@Query() query: PaginatePostDto) {
-    return this.postsService.paginatePosts(query);
+    return { posts: this.postsService.paginatePosts(query) };
   }
 
   @Get(':id')
   @IsPublic()
   getPostById(@Param('id') id: string) {
-    return this.postsService.getPostById(+id);
+    return { post: this.postsService.getPostById(+id) };
   }
 
   @Patch(':id')
