@@ -37,3 +37,4 @@ lerna-debug.log*
 .env
 public
 postgres-data
+db/schema.sql
