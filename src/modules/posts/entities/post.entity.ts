@@ -30,5 +30,5 @@ export class PostsModel extends BaseModel {
     name: 'content_slate',
   })
   @IsString()
-  content_slate: string;
+  contentSlate: string;
 }

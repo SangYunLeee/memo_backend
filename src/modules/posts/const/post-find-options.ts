@@ -6,7 +6,7 @@ export const POST_FIND_OPTIONS: FindManyOptions<PostsModel> = {
     id: true,
     title: true,
     content: true,
-    content_slate: true,
+    contentSlate: true,
     createdAt: true,
   },
   relations: {
