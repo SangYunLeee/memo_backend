@@ -51,7 +51,9 @@ export class PostsService {
       ...postDto,
       author: { id: authorId },
     });
-    return repo.save(post);
+    const createdPost = await repo.save(post);
+    const newPost = await this.getPostById(createdPost.id, qr);
+    return newPost;
   }
 
   async deletePostById(id: number): Promise<void> {
@@ -102,7 +104,7 @@ export class PostsService {
         {
           title: `임의 제목: ${i}`,
           content: `임의 내용:  ${i}`,
-          content_slate: JSON.stringify([
+          contentSlate: JSON.stringify([
             {
               type: 'paragraph',
               children: [{ text: `${i} 임의 내용` }],
