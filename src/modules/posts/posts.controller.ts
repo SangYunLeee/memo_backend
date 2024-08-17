@@ -29,14 +29,16 @@ export class PostsController {
 
   @Get()
   @IsPublic()
-  getPosts(@Query() query: PaginatePostDto) {
-    return { posts: this.postsService.paginatePosts(query) };
+  async getPosts(@Query() query: PaginatePostDto) {
+    const posts = await this.postsService.paginatePosts(query);
+    return { posts };
   }
 
   @Get(':id')
   @IsPublic()
-  getPostById(@Param('id') id: string) {
-    return { post: this.postsService.getPostById(+id) };
+  async getPostById(@Param('id') id: string) {
+    const post = await this.postsService.getPostById(+id);
+    return { post };
   }
 
   @Patch(':id')
