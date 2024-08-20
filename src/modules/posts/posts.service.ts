@@ -125,6 +125,8 @@ export class PostsService {
   }
 
   async isPostMine(postId: number, userId: number) {
+    console.log('postId:', postId);
+    console.log('userId:', userId);
     const exist = await this.postsRepository.exists({
       where: {
         id: postId,

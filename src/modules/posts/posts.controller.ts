@@ -34,22 +34,25 @@ export class PostsController {
     return { posts };
   }
 
-  @Get(':id')
+  @Get(':postId')
   @IsPublic()
-  async getPostById(@Param('id') id: string) {
-    const post = await this.postsService.getPostById(+id);
+  async getPostById(@Param('postId') postId: string) {
+    const post = await this.postsService.getPostById(+postId);
     return { post };
   }
 
-  @Patch(':id')
+  @Patch(':postId')
   @UseGuards(IsPostMineOrAdminGuard)
-  updatePost(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.updatePost(+id, updatePostDto);
+  updatePost(
+    @Param('postId') postId: string,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
+    return this.postsService.updatePost(+postId, updatePostDto);
   }
 
-  @Delete(':id')
+  @Delete(':postId')
   @UseGuards(IsPostMineOrAdminGuard)
-  deletePostById(@Param('id') id: string) {
-    return this.postsService.deletePostById(+id);
+  deletePostById(@Param('postId') postId: string) {
+    return this.postsService.deletePostById(+postId);
   }
 }
