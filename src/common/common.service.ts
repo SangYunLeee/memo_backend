@@ -8,6 +8,7 @@ import {
   Repository,
 } from 'typeorm';
 import { FILTER_MAPPER } from './const/filter-mapper.const';
+import { find } from 'rxjs';
 
 @Injectable()
 export class CommonService {
@@ -33,6 +34,9 @@ export class CommonService {
     path: string,
   ) {
     const findOptions = this.composeFindOptions<T>(dto);
+    const overrideWhereOption = overrideOptions.where as FindOptionsWhere<T>;
+    const findOptionsWhere = findOptions.where as FindOptionsWhere<T>[];
+
     const modifiedOptions = {
       ...findOptions,
       ...overrideOptions,
@@ -40,10 +44,12 @@ export class CommonService {
         ...findOptions.relations,
         ...overrideOptions.relations,
       },
-      where: {
-        ...findOptions.where,
-        ...overrideOptions.where,
-      },
+      where: findOptionsWhere.map((where) => {
+        return {
+          ...where,
+          ...overrideWhereOption,
+        };
+      }),
       order: {
         ...findOptions.order,
         ...overrideOptions.order,
@@ -138,15 +144,16 @@ export class CommonService {
   private composeFindOptions<T extends BaseModel>(
     dto: BasePaginationDto,
   ): FindManyOptions<T> {
-    let where: FindOptionsWhere<T> = {};
+    let where: FindOptionsWhere<T>[] = [];
     let order: FindOptionsOrder<T> = {};
 
     for (const [key, value] of Object.entries(dto)) {
       if (key.startsWith('where__')) {
-        where = {
-          ...where,
-          ...this.parseFindOptionsFilter(key, value),
-        };
+        const newWhere = this.parseFindOptionsFilter(
+          key,
+          value,
+        ) as FindOptionsWhere<T>;
+        where = [...where, newWhere];
       } else if (key.startsWith('order__')) {
         order = {
           ...order,
