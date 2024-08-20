@@ -84,6 +84,10 @@ export class PostsService {
       post.content = postDto.content;
     }
 
+    if (postDto.contentSlate) {
+      post.contentSlate = postDto.contentSlate;
+    }
+
     const newPost = await this.postsRepository.save(post);
     return await this.getPostById(newPost.id);
   }
