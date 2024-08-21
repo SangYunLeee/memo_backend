@@ -42,8 +42,8 @@ Table files {
   stored_filename varchar(255) [not null]
   file_size bigint [not null]
   mime_type varchar(100)
-  upload_date timestamp [not null, default: `now()`]
-  post_id integer [not null, ref: > posts.id]
+  created_at timestamp [not null, default: `now()`]
+  post_id integer [ref: > posts.id]
   user_id integer [ref: > users.id]
   file_path varchar(1000) [not null]
   description text
