@@ -1,5 +1,3 @@
-// https://dbdiagram.io/d/%EC%B9%B4%ED%94%BC%EB%B3%B8-668519aa9939893daeebf14d
-
 table users as u {
   id integer [pk, increment]
   nickname varchar(100) [not null, unique]
@@ -7,6 +5,7 @@ table users as u {
   password varchar(100) [not null]
   created_at timestamp [not null, default: `now()`]
   role varchar(10) [ default: '']
+  thumbnail_id integer [ref: > user_files.id, null]
 }
 
 table posts as p {
@@ -16,7 +15,7 @@ table posts as p {
   content varchar(6000) [not null]
   content_slate varchar(6000)
   cate_id integer [ref: > cate.id]
-  thumnail_img_url varchar(1000)
+  thumbnail_id integer [ref: > post_files.id]
   created_at timestamp [not null, default: `now()`]
 }
 
@@ -36,15 +35,27 @@ table comments as cmt {
   created_at timestamp [not null, default: `now()`]
 }
 
-Table files {
+Table user_files {
   id integer [pk, increment]
   original_filename varchar(255) [not null]
   stored_filename varchar(255) [not null]
   file_size bigint [not null]
   mime_type varchar(100)
   created_at timestamp [not null, default: `now()`]
-  post_id integer [ref: > posts.id]
-  user_id integer [ref: > users.id]
   file_path varchar(1000) [not null]
   description text
+  user_id integer [ref: > users.id, not null]
+}
+
+Table post_files {
+  id integer [pk, increment]
+  original_filename varchar(255) [not null]
+  stored_filename varchar(255) [not null]
+  file_size bigint [not null]
+  mime_type varchar(100)
+  created_at timestamp [not null, default: `now()`]
+  file_path varchar(1000) [not null]
+  description text
+  post_id integer [ref: > posts.id, not null]
+  user_id integer [ref: > users.id, not null]
 }
