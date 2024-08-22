@@ -17,6 +17,8 @@ table posts as p {
   cate_id integer [ref: > cate.id]
   thumbnail_id integer [ref: > post_files.id]
   created_at timestamp [not null, default: `now()`]
+  status_id integer [ref: > post_statuses.id, default: 1]
+  visibility_id integer [ref: > visibility_levels.id, default: 1]
 }
 
 table categories as cate {
@@ -58,4 +60,15 @@ Table post_files {
   description text
   post_id integer [ref: > posts.id, not null]
   user_id integer [ref: > users.id, not null]
+}
+
+Table post_statuses {
+  id integer [pk, increment]
+  status_name varchar(20) [not null, unique]
+}
+
+Table visibility_levels {
+  id integer [pk, increment]
+  level_name varchar(20) [not null, unique]  // 'private', 'public', 'group_only', 'friends_only', etc.
+  description text
 }
