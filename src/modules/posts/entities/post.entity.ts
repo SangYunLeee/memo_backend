@@ -1,7 +1,8 @@
 import { IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { PostFilesModel } from '../files/entities/files.entity';
 
 @Entity('posts')
 export class PostsModel extends BaseModel {
@@ -31,4 +32,8 @@ export class PostsModel extends BaseModel {
   })
   @IsString()
   contentSlate: string;
+
+  // RelationShip
+  @OneToMany((type) => PostFilesModel, (postFile) => postFile.post)
+  postFiles: PostFilesModel[];
 }

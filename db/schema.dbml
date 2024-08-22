@@ -39,6 +39,7 @@ table comments as cmt {
 
 Table user_files {
   id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
   original_filename varchar(255) [not null]
   stored_filename varchar(255) [not null]
   file_size bigint [not null]
@@ -46,11 +47,12 @@ Table user_files {
   created_at timestamp [not null, default: `now()`]
   file_path varchar(1000) [not null]
   description text
-  user_id integer [ref: > users.id, not null]
 }
 
 Table post_files {
   id integer [pk, increment]
+  user_id integer [ref: > users.id, not null]
+  post_id integer [ref: > posts.id, not null]
   original_filename varchar(255) [not null]
   stored_filename varchar(255) [not null]
   file_size bigint [not null]
@@ -58,8 +60,7 @@ Table post_files {
   created_at timestamp [not null, default: `now()`]
   file_path varchar(1000) [not null]
   description text
-  post_id integer [ref: > posts.id, not null]
-  user_id integer [ref: > users.id, not null]
+  is_temporary boolean [not null, default: true]  // 임시 파일 여부
 }
 
 Table post_statuses {
@@ -72,3 +73,4 @@ Table visibility_levels {
   level_name varchar(20) [not null, unique]  // 'private', 'public', 'group_only', 'friends_only', etc.
   description text
 }
+

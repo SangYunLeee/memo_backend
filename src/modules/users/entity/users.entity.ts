@@ -4,6 +4,7 @@ import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { PostsModel } from 'src/modules/posts/entities/post.entity';
+import { PostFilesModel } from 'src/modules/posts/files/entities/files.entity';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
@@ -37,4 +38,8 @@ export class UsersModel extends BaseModel {
   // RelationShip
   @OneToMany((type) => PostsModel, (post) => post.author)
   posts: PostsModel[];
+
+  // RelationShip
+  @OneToMany((type) => PostFilesModel, (postFile) => postFile.author)
+  postFiles: PostFilesModel[];
 }
