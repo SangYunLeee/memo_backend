@@ -2,7 +2,7 @@ import { IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { PostFilesModel } from '../files/entities/files.entity';
+import { PostFilesModel } from '../files/entities/postFiles.entity';
 
 @Entity('posts')
 export class PostsModel extends BaseModel {

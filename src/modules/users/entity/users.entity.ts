@@ -4,7 +4,7 @@ import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Exclude } from 'class-transformer';
 import { PostsModel } from 'src/modules/posts/entities/post.entity';
-import { PostFilesModel } from 'src/modules/posts/files/entities/files.entity';
+import { PostFilesModel } from 'src/modules/posts/files/entities/postFiles.entity';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
