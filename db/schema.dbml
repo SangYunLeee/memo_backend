@@ -14,7 +14,6 @@ table posts as p {
   content varchar(6000) [not null]
   content_slate varchar(6000)
   cate_id integer [ref: > cate.id]
-  thumbnail_id integer [ref: > post_images.id]
   created_at timestamp [not null, default: `now()`]
   status_id integer [ref: > post_statuses.id, default: 1]
   visibility_id integer [ref: > visibility_levels.id, default: 1]
@@ -22,11 +21,11 @@ table posts as p {
 
 table categories as cate {
   id integer [pk, increment]
+  parent_cate_id integer [ref: > cate.id]
   pos integer
   users_id integer [ref: > u.id]
   category_name varchar(150) [not null]
   level integer [default: 1]
-  parent_cate_id integer [ref: > cate.id]
 }
 
 table comments as cmt {
@@ -61,6 +60,7 @@ Table visibility_levels {
 Table post_images {
   id integer [pk, increment]
   post_id integer [ref: > posts.id, not null]
+  is_thumbnail boolean [not null, default: false]  // 임시 파일 여부
   original_filename varchar(255) [not null]
   stored_filename varchar(255) [not null]
   file_size bigint [not null]
