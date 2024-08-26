@@ -5,7 +5,6 @@ table users as u {
   password varchar(100) [not null]
   created_at timestamp [not null, default: `now()`]
   role varchar(10) [ default: '']
-  thumbnail_id integer [ref: > user_files.id, null]
 }
 
 table posts as p {
@@ -15,7 +14,7 @@ table posts as p {
   content varchar(6000) [not null]
   content_slate varchar(6000)
   cate_id integer [ref: > cate.id]
-  thumbnail_id integer [ref: > post_files.id]
+  thumbnail_id integer [ref: > post_images.id]
   created_at timestamp [not null, default: `now()`]
   status_id integer [ref: > post_statuses.id, default: 1]
   visibility_id integer [ref: > visibility_levels.id, default: 1]
@@ -26,6 +25,7 @@ table categories as cate {
   pos integer
   users_id integer [ref: > u.id]
   category_name varchar(150) [not null]
+  level integer [default: 1]
   parent_cate_id integer [ref: > cate.id]
 }
 
@@ -46,21 +46,6 @@ Table user_files {
   mime_type varchar(100)
   created_at timestamp [not null, default: `now()`]
   file_path varchar(1000) [not null]
-  description text
-}
-
-Table post_files {
-  id integer [pk, increment]
-  user_id integer [ref: > users.id, not null]
-  post_id integer [ref: > posts.id, not null]
-  original_filename varchar(255) [not null]
-  stored_filename varchar(255) [not null]
-  file_size bigint [not null]
-  mime_type varchar(100)
-  created_at timestamp [not null, default: `now()`]
-  file_path varchar(1000) [not null]
-  description text
-  is_temporary boolean [not null, default: true]  // 임시 파일 여부
 }
 
 Table post_statuses {
@@ -71,6 +56,16 @@ Table post_statuses {
 Table visibility_levels {
   id integer [pk, increment]
   level_name varchar(20) [not null, unique]  // 'private', 'public', 'group_only', 'friends_only', etc.
-  description text
 }
 
+Table post_images {
+  id integer [pk, increment]
+  post_id integer [ref: > posts.id, not null]
+  original_filename varchar(255) [not null]
+  stored_filename varchar(255) [not null]
+  file_size bigint [not null]
+  mime_type varchar(100)
+  created_at timestamp [not null, default: `now()`]
+  file_path varchar(1000) [not null]
+  is_temporary boolean [not null, default: true]  // 임시 파일 여부
+}
