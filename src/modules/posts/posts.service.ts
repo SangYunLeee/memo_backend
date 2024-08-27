@@ -113,6 +113,7 @@ export class PostsService {
               children: [{ text: `${i} 임의 내용` }],
             },
           ]),
+          statusId: 2,
         },
         userId,
       );

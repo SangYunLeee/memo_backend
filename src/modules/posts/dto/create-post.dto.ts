@@ -5,4 +5,5 @@ export class CreatePostDto extends PickType(PostsModel, [
   'title',
   'content',
   'contentSlate',
+  'statusId',
 ]) {}

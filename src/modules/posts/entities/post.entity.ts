@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsNumber, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
@@ -32,6 +32,22 @@ export class PostsModel extends BaseModel {
   })
   @IsString()
   contentSlate: string;
+
+  // 1: draft, 2: published, 3: unregistered
+  @Column({
+    name: 'status_id',
+    default: 2,
+  })
+  @IsNumber()
+  statusId: number;
+
+  // 1: public, 2: private
+  @Column({
+    name: 'visibility_id',
+    default: 1,
+  })
+  @IsNumber()
+  visibilityId: number;
 
   // RelationShip
   @OneToMany((type) => PostFilesModel, (postFile) => postFile.post)

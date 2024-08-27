@@ -43,11 +43,12 @@ export class PostsController {
 
   @Patch(':postId')
   @UseGuards(IsPostMineOrAdminGuard)
-  updatePost(
+  async updatePost(
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return this.postsService.updatePost(+postId, updatePostDto);
+    const post = await this.postsService.updatePost(+postId, updatePostDto);
+    return { post };
   }
 
   @Delete(':postId')
