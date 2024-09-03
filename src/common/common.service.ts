@@ -148,6 +148,7 @@ export class CommonService {
     let order: FindOptionsOrder<T> = {};
 
     for (const [key, value] of Object.entries(dto)) {
+      if (key.startsWith('where__and')) continue;
       if (key.startsWith('where__')) {
         const parsedNewWhere = this.parseFindOptionsFilter(
           key,
@@ -161,9 +162,23 @@ export class CommonService {
         };
       }
     }
-
     if (where.length === 0) {
       where = [{}];
+    }
+
+    for (const [key, value] of Object.entries(dto)) {
+      if (key.startsWith('where__and')) {
+        const parsedNewWhere = this.parseFindOptionsFilter(
+          key,
+          value,
+        ) as FindOptionsWhere<T>;
+        where = where.map((w) => {
+          return {
+            ...w,
+            ...parsedNewWhere,
+          };
+        });
+      }
     }
 
     return {
@@ -183,10 +198,14 @@ export class CommonService {
      * ['where', 'id', 'more_than']
      */
     const split = key.split('__');
+    if (split[1] === 'and') {
+      // split[1] 의 값이 and 일 경우에는 제거한다.
+      split.splice(1, 1);
+    }
 
-    if (split.length !== 2 && split.length !== 3 && split.length !== 4) {
+    if (!(split.length >= 2 && split.length <= 5)) {
       throw new BadRequestException(
-        `where 필터는 '__'로 split 했을때 길이가 2 ~ 4 사이여야합니다 - 문제되는 키값 : ${key}`,
+        `where 필터는 '__'로 split 했을때 길이가 2 ~ 5 사이여야합니다 - 문제되는 키값 : ${key}`,
       );
     }
 
@@ -194,7 +213,7 @@ export class CommonService {
       // ['where', 'id']
       const [, field] = split;
       options[field] = value;
-    } else if (split.length === 3){
+    } else if (split.length === 3) {
       // ['where', 'id', 'more_than']
       const [_, field, operator] = split;
       if (operator === 'i_like') {
@@ -202,7 +221,7 @@ export class CommonService {
       } else {
         options[field] = FILTER_MAPPER[operator](value);
       }
-    } else {
+    } else if (split.length === 4) {
       // ['where', 'status', 'id', 'equal']
       const [_, relation, field, operator] = split;
       if (!options[relation]) {
@@ -210,7 +229,6 @@ export class CommonService {
       }
       options[relation] = { [field]: FILTER_MAPPER[operator](value) };
     }
-
     return options;
   }
 }
