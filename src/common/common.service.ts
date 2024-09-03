@@ -36,7 +36,6 @@ export class CommonService {
     const findOptions = this.composeFindOptions<T>(dto);
     const overrideWhereOption = overrideOptions.where as FindOptionsWhere<T>;
     const findOptionsWhere = findOptions.where as FindOptionsWhere<T>[];
-
     const modifiedOptions = {
       ...findOptions,
       ...overrideOptions,
@@ -160,6 +159,10 @@ export class CommonService {
           ...this.parseFindOptionsFilter(key, value),
         };
       }
+    }
+
+    if (where.length === 0) {
+      where = [{}];
     }
 
     return {

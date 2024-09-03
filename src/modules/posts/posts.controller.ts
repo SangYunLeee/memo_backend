@@ -16,7 +16,6 @@ import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { User } from '../users/decorator/user.decorator';
 import { PaginatePostDto } from './dto/paginte-post.dto';
 import { IsPostMineOrAdminGuard } from './guard/is-post-mine-or-admin.guard';
-
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}

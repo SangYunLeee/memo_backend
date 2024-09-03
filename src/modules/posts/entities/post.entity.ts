@@ -3,6 +3,7 @@ import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { PostFilesModel } from '../files/entities/postFiles.entity';
+import { PostStatusModel } from './post-status.entity';
 
 @Entity('posts')
 export class PostsModel extends BaseModel {
@@ -33,14 +34,6 @@ export class PostsModel extends BaseModel {
   @IsString()
   contentSlate: string;
 
-  // 1: draft, 2: published, 3: unregistered
-  @Column({
-    name: 'status_id',
-    default: 2,
-  })
-  @IsNumber()
-  statusId: number;
-
   // 1: public, 2: private
   @Column({
     name: 'visibility_id',
@@ -52,4 +45,9 @@ export class PostsModel extends BaseModel {
   // RelationShip
   @OneToMany((type) => PostFilesModel, (postFile) => postFile.post)
   postFiles: PostFilesModel[];
+
+  // 1: draft, 2: published, 3: unregistered
+  @ManyToOne((type) => PostStatusModel, (status) => status.posts)
+  @JoinColumn({ name: 'status_id' })
+  status: PostStatusModel;
 }

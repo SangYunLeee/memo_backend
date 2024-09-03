@@ -50,6 +50,7 @@ export class PostsService {
     const post = repo.create({
       ...postDto,
       author: { id: authorId },
+      status: { id: postDto.statusId },
     });
     const createdPost = await repo.save(post);
     const newPost = await this.getPostById(createdPost.id, qr);
