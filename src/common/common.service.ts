@@ -33,7 +33,7 @@ export class CommonService {
     overrideOptions: FindManyOptions<T>,
     path: string,
   ) {
-    const findOptions = this.composeFindOptions<T>(dto);
+    const findOptions = this.composeFindOptions<T>(dto, overrideOptions);
     const overrideWhereOption = overrideOptions.where as FindOptionsWhere<T>;
     const findOptionsWhere = findOptions.where as FindOptionsWhere<T>[];
     const modifiedOptions = {
@@ -142,17 +142,18 @@ export class CommonService {
 
   private composeFindOptions<T extends BaseModel>(
     dto: BasePaginationDto,
+    overrideOption: FindManyOptions<T> = {},
   ): FindManyOptions<T> {
     let where: FindOptionsWhere<T>[] = [];
     let order: FindOptionsOrder<T> = {};
 
     for (const [key, value] of Object.entries(dto)) {
       if (key.startsWith('where__')) {
-        const newWhere = this.parseFindOptionsFilter(
+        const parsedNewWhere = this.parseFindOptionsFilter(
           key,
           value,
         ) as FindOptionsWhere<T>;
-        where = [...where, newWhere];
+        where = [...where, { ...parsedNewWhere, ...overrideOption.where }];
       } else if (key.startsWith('order__')) {
         order = {
           ...order,
@@ -183,9 +184,9 @@ export class CommonService {
      */
     const split = key.split('__');
 
-    if (split.length !== 2 && split.length !== 3) {
+    if (split.length !== 2 && split.length !== 3 && split.length !== 4) {
       throw new BadRequestException(
-        `where 필터는 '__'로 split 했을때 길이가 2 또는 3이어야합니다 - 문제되는 키값 : ${key}`,
+        `where 필터는 '__'로 split 했을때 길이가 2 ~ 4 사이여야합니다 - 문제되는 키값 : ${key}`,
       );
     }
 
@@ -193,7 +194,7 @@ export class CommonService {
       // ['where', 'id']
       const [, field] = split;
       options[field] = value;
-    } else {
+    } else if (split.length === 3){
       // ['where', 'id', 'more_than']
       const [_, field, operator] = split;
       if (operator === 'i_like') {
@@ -201,6 +202,13 @@ export class CommonService {
       } else {
         options[field] = FILTER_MAPPER[operator](value);
       }
+    } else {
+      // ['where', 'status', 'id', 'equal']
+      const [_, relation, field, operator] = split;
+      if (!options[relation]) {
+        options[relation] = {};
+      }
+      options[relation] = { [field]: FILTER_MAPPER[operator](value) };
     }
 
     return options;

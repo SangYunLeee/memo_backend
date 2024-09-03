@@ -8,11 +8,7 @@ export class CreatePostDto extends PickType(PostsModel, [
   'content',
   'contentSlate',
 ]) {
-  @Expose()
-  @Transform(({ value }) => {
-    return value !== undefined ? value : 2; // published
-  })
   @IsOptional()
   @IsNumber()
-  statusId: number;
+  statusId: number = 2;
 }
