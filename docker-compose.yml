@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: sororiri/memo-backend:0.0.4
+    image: sororiri/memo-backend:0.0.5
     build:
       context: .
       dockerfile: Dockerfile

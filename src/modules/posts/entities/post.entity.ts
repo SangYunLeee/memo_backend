@@ -2,8 +2,8 @@ import { IsNumber, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { PostFilesModel } from '../files/entities/postFiles.entity';
 import { PostStatusModel } from './post-status.entity';
+import { PostImagesModel } from '../images/entities/postImages.entity';
 
 @Entity('posts')
 export class PostsModel extends BaseModel {
@@ -43,8 +43,8 @@ export class PostsModel extends BaseModel {
   visibilityId: number;
 
   // RelationShip
-  @OneToMany((type) => PostFilesModel, (postFile) => postFile.post)
-  postFiles: PostFilesModel[];
+  @OneToMany((type) => PostImagesModel, (postImage) => postImage.post)
+  postImages: PostImagesModel[];
 
   // 1: draft, 2: published, 3: unregistered
   @ManyToOne((type) => PostStatusModel, (status) => status.posts)
