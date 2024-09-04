@@ -10,7 +10,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('token/access')
-  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   postTokenAccess(@Req() req: { token: string }) {
     const newToken = this.authService.rotateToken(req.token, false);
@@ -23,7 +22,6 @@ export class AuthController {
   }
 
   @Post('token/refresh')
-  @IsPublic()
   @UseGuards(RefreshTokenGuard)
   postTokenRefresh(@Req() req: { token: string }) {
     const newToken = this.authService.rotateToken(req.token, true);
