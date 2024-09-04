@@ -7,6 +7,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { PaginatePostDto } from './dto/paginte-post.dto';
 import { CommonService } from 'src/common/common.service';
 import { POST_FIND_OPTIONS } from './const/post-find-options';
+import { omitBy, isNil } from 'lodash';
 @Injectable()
 export class PostsService {
   constructor(
@@ -67,29 +68,20 @@ export class PostsService {
     // 1) 만약에 데이터가 존재하지 않는다면 (id 기준으로) 새로 생성한다.
     // 2) 만약에 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트한다.
 
-    const post = await this.postsRepository.findOne({
-      where: {
-        id: postId,
-      },
-    });
+    const post = await this.getPostById(postId);
 
     if (!post) {
       throw new NotFoundException();
     }
 
-    if (postDto.title) {
-      post.title = postDto.title;
-    }
+    const filteredDto = omitBy(postDto, isNil);
 
-    if (postDto.content) {
-      post.content = postDto.content;
-    }
+    const newPost = await this.postsRepository.save({
+      ...post,
+      ...filteredDto,
+      status: { id: postDto.statusId },
+    });
 
-    if (postDto.contentSlate) {
-      post.contentSlate = postDto.contentSlate;
-    }
-
-    const newPost = await this.postsRepository.save(post);
     return await this.getPostById(newPost.id);
   }
 
