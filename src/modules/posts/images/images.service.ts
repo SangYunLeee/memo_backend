@@ -50,7 +50,7 @@ export class ImagesService {
     return {
       postImage: {
         id: postImage.id,
-        url: `${process.env.BASE_URL}/posts/${post.id}/images/file/${image.filename}`,
+        url: `${process.env.BACKEND_URL}/posts/${post.id}/images/file/${image.filename}`,
       },
     };
   }

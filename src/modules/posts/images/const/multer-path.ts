@@ -13,4 +13,4 @@ export const POSTS_IMAGES_FOLDER_PATH = join(
   POSTS_FOLDER_NAME,
   IMAGES_FOLDER_NAME,
 );
-export const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+export const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';

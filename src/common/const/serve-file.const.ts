@@ -7,4 +7,4 @@ export const POSTS_FOLDER_NAME = 'posts';
 export const PUBLIC_FOLDER_PATH = join(SERVE_PATH, PUBLIC_FOLDER_NAME);
 export const TEMP_FOLDER_PATH = join(PUBLIC_FOLDER_PATH, TEMP_FOLDER_NAME);
 export const POSTS_FOLDER_PATH = join(PUBLIC_FOLDER_PATH, POSTS_FOLDER_NAME);
-export const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+export const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';

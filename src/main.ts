@@ -18,7 +18,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
-  await app.listen(process.env.SERVER_PORT || 3001);
+  await app.listen(process.env.BACKEND_PORT || 3001);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
