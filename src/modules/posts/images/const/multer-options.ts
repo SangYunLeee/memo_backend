@@ -1,11 +1,5 @@
 import { createHash } from 'crypto';
-import {
-  IMAGES_FOLDER_NAME,
-  POSTS_FOLDER_NAME,
-  POSTS_IMAGES_FOLDER_PATH,
-  PUBLIC_FOLDER_NAME,
-  TEMP_FOLDER_PATH,
-} from './multer-path';
+import { POSTS_IMAGES_FOLDER_PATH, TEMP_FOLDER_PATH } from './multer-path';
 import * as multer from 'multer';
 import { join } from 'path';
 

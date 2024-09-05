@@ -43,9 +43,15 @@ export class ImagesService {
       filePath: imagePath,
     });
     mkdirSync(imagePath, { recursive: true });
-    await promises.rename(image.destination, imagePath);
+    await promises.rename(
+      `${image.destination}/${image.filename}`,
+      `${imagePath}/${image.filename}`,
+    );
     return {
-      url: `${process.env.BASE_URL}/posts/${post.id}/images/file/${image.filename}`,
+      postImage: {
+        id: postImage.id,
+        url: `${process.env.BASE_URL}/posts/${post.id}/images/file/${image.filename}`,
+      },
     };
   }
 }
