@@ -14,24 +14,31 @@ services:
     image: amacneil/dbmate
     env_file:
       - ../../.docker.env.local
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
     command: "--wait up"
     working_dir: /app
     volumes:
       - ../../db:/app/db
     depends_on:
       - db
-    extra_hosts:
-      host.docker.internal: host-gateway
   backend:
     image: sororiri/memo-backend:0.0.4
     build:
       context: ../..
       dockerfile: Dockerfile
     ports:
-      - "3002:3001"
+      - "3001:3001"
     env_file:
-      - ../../.env
+      - ../../.env.dev
     environment:
-      DB_HOST: host.docker.internal
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_TYPE: postgres
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: postgres
+    volumes:
+      - ../../public:/app/public
     depends_on:
       - dbmate
