@@ -1,13 +1,23 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('categories')
-export class CategoryModel extends BaseModel {
+export class CategoryModel {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column()
   @IsNumber()
-  pos: number;
+  @IsOptional()
+  pos: number = 99;
 
   @ManyToOne(() => UsersModel, (user) => user.posts, {
     nullable: false,
@@ -20,7 +30,7 @@ export class CategoryModel extends BaseModel {
   @Column({
     length: 150,
     nullable: false,
-    name: 'cateogory_name',
+    name: 'category_name',
   })
   @IsString()
   categoryName: string;
