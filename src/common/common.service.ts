@@ -113,7 +113,9 @@ export class CommonService {
     repository: Repository<T>,
     overrideOptions: FindManyOptions<T> = {},
   ) {
-    const findOptions = this.composeFindOptions<T>(dto);
+    const findOptions = this.composeFindOptions<T>(dto, overrideOptions);
+    const overrideWhereOption = overrideOptions.where as FindOptionsWhere<T>;
+    const findOptionsWhere = findOptions.where as FindOptionsWhere<T>[];
     const modifiedOptions = {
       ...findOptions,
       ...overrideOptions,
@@ -121,15 +123,22 @@ export class CommonService {
         ...findOptions.relations,
         ...overrideOptions.relations,
       },
-      where: {
-        ...findOptions.where,
-        ...overrideOptions.where,
-      },
+      where: findOptionsWhere.map((where) => {
+        return {
+          ...where,
+          ...overrideWhereOption,
+        };
+      }),
       order: {
         ...findOptions.order,
         ...overrideOptions.order,
       },
+      select: {
+        ...findOptions.select,
+        ...overrideOptions.select,
+      },
     };
+
     const [data, count] = await repository.findAndCount(modifiedOptions);
 
     return {
