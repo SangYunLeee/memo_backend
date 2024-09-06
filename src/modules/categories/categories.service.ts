@@ -11,26 +11,31 @@ export class CategoriesService {
     @InjectRepository(CategoryModel)
     private readonly categoriesRepository: Repository<CategoryModel>,
   ) {}
-  create(userId: number, createCategoryDto: CreateCategoryDto) {
-    return this.categoriesRepository.save({
+  async create(userId: number, createCategoryDto: CreateCategoryDto) {
+    return await this.categoriesRepository.save({
       ...createCategoryDto,
       user: { id: userId },
     });
   }
 
-  findAll() {
-    return `This action returns all categories`;
+  async findAll({ userId }: { userId?: number } = {}) {
+    return await this.categoriesRepository.find({
+      where: { user: { id: userId } },
+      select: {
+        id: true,
+        pos: true,
+        categoryName: true,
+        user: { id: true },
+      },
+      relations: ['user'],
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
-  }
-
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    return await this.categoriesRepository.update(id, updateCategoryDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} category`;
+    return this.categoriesRepository.delete(id);
   }
 }
