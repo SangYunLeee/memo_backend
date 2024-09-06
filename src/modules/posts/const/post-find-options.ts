@@ -12,5 +12,6 @@ export const POST_FIND_OPTIONS: FindManyOptions<PostsModel> = {
   relations: {
     author: true,
     status: true,
+    category: true,
   },
 };

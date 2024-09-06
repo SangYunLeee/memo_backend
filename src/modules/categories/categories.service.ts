@@ -31,6 +31,16 @@ export class CategoriesService {
     });
   }
 
+  findOne(id: number) {
+    return this.categoriesRepository.findOne({ where: { id } });
+  }
+
+  async exists(id: number) {
+    return await this.categoriesRepository
+      .count({ where: { id } })
+      .then((count) => count > 0);
+  }
+
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
     return await this.categoriesRepository.update(id, updateCategoryDto);
   }

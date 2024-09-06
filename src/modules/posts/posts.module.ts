@@ -5,11 +5,29 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostsModel } from './entities/post.entity';
 import { CommonModule } from 'src/common/common.module';
 import { ImagesModule } from './images/images.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
+import { AuthModule } from '../auth/auth.module';
+import { UsersModule } from '../users/users.module';
+import { CategoriesModule } from '../categories/categories.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PostsModel]), CommonModule, ImagesModule],
+  imports: [
+    TypeOrmModule.forFeature([PostsModel]),
+    CommonModule,
+    ImagesModule,
+    AuthModule,
+    UsersModule,
+    CategoriesModule,
+  ],
   exports: [PostsService],
   controllers: [PostsController],
-  providers: [PostsService],
+  providers: [
+    PostsService,
+    {
+      provide: APP_GUARD,
+      useClass: AccessTokenGuard,
+    },
+  ],
 })
 export class PostsModule {}

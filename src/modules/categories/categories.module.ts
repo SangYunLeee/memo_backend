@@ -8,6 +8,7 @@ import { UsersModule } from '../users/users.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([CategoryModel]), AuthModule, UsersModule],
+  exports: [CategoriesService],
   controllers: [CategoriesController],
   providers: [CategoriesService],
 })
