@@ -20,4 +20,6 @@ export class BasePaginationDto {
   @IsNumber()
   @IsOptional()
   take: number = 100;
+
+  stopFlag: boolean;
 }

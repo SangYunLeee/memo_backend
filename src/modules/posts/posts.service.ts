@@ -8,12 +8,14 @@ import { PaginatePostDto } from './dto/paginte-post.dto';
 import { CommonService } from 'src/common/common.service';
 import { POST_FIND_OPTIONS } from './const/post-find-options';
 import { omitBy, isNil } from 'lodash';
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
     private readonly commonService: CommonService,
+    private readonly usersService: UsersService,
   ) {}
 
   getPostRepository(qr?: QueryRunner) {
@@ -87,10 +89,23 @@ export class PostsService {
   }
 
   async paginatePosts(dto: PaginatePostDto) {
+    const { nickname } = dto;
+    if (nickname) {
+      const user = await this.usersService.getUserByNickname(nickname);
+      dto = { ...dto,
+        // 유저 미존재 시, stopFlag를 true로 설정하여 빈 배열을 반환하도록 한다.
+        userId: user?.id, stopFlag: !user,
+      };
+    }
+
+    const whereCondition = dto.userId
+    ? { author: { id: dto.userId } }
+    : {};
+
     return this.commonService.paginate(
       dto,
       this.postsRepository,
-      POST_FIND_OPTIONS,
+      {...POST_FIND_OPTIONS, where: whereCondition},
       'posts',
     );
   }

@@ -33,33 +33,8 @@ export class CommonService {
     overrideOptions: FindManyOptions<T>,
     path: string,
   ) {
-    const findOptions = this.composeFindOptions<T>(dto, overrideOptions);
-    const overrideWhereOption = overrideOptions.where as FindOptionsWhere<T>;
-    const findOptionsWhere = findOptions.where as FindOptionsWhere<T>[];
-    const modifiedOptions = {
-      ...findOptions,
-      ...overrideOptions,
-      relations: {
-        ...findOptions.relations,
-        ...overrideOptions.relations,
-      },
-      where: findOptionsWhere.map((where) => {
-        return {
-          ...where,
-          ...overrideWhereOption,
-        };
-      }),
-      order: {
-        ...findOptions.order,
-        ...overrideOptions.order,
-      },
-      select: {
-        ...findOptions.select,
-        ...overrideOptions.select,
-      },
-    };
-
-    const results = await repository.find(modifiedOptions);
+    const modifiedOptions = this.composeModifiedOptions(dto, overrideOptions);
+    const results = !dto.stopFlag ? await repository.find(modifiedOptions) : [];
 
     const lastItem =
       results.length > 0 && results.length === dto.take
@@ -98,6 +73,7 @@ export class CommonService {
      * count: 응답한 데이터의 갯수
      * next: 다음 요청을 할때 사용할 URL
      */
+
     return {
       data: results,
       cursor: {
@@ -113,10 +89,25 @@ export class CommonService {
     repository: Repository<T>,
     overrideOptions: FindManyOptions<T> = {},
   ) {
+    const modifiedOptions = this.composeModifiedOptions(dto, overrideOptions);
+    const [data, count] = !dto.stopFlag
+      ? await repository.findAndCount(modifiedOptions)
+      : [[], 0];
+
+    return {
+      data,
+      total: count,
+    };
+  }
+
+  private composeModifiedOptions<T extends BaseModel>(
+    dto: BasePaginationDto,
+    overrideOptions: FindManyOptions<T>,
+  ) {
     const findOptions = this.composeFindOptions<T>(dto, overrideOptions);
     const overrideWhereOption = overrideOptions.where as FindOptionsWhere<T>;
     const findOptionsWhere = findOptions.where as FindOptionsWhere<T>[];
-    const modifiedOptions = {
+    return {
       ...findOptions,
       ...overrideOptions,
       relations: {
@@ -137,13 +128,6 @@ export class CommonService {
         ...findOptions.select,
         ...overrideOptions.select,
       },
-    };
-
-    const [data, count] = await repository.findAndCount(modifiedOptions);
-
-    return {
-      data,
-      total: count,
     };
   }
 

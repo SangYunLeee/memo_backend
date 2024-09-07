@@ -40,6 +40,11 @@ export class UsersService {
     });
   }
 
+  async getUserByNickname(nickname: string): Promise<UsersModel> {
+    const user = await this.usersRepository.findOne({ where: { nickname } });
+    return user;
+  }
+
   async getAllUsers(): Promise<UsersModel[]> {
     return this.usersRepository.find();
   }
