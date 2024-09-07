@@ -98,14 +98,12 @@ export class PostsService {
       };
     }
 
-    const whereCondition = dto.userId
-    ? { author: { id: dto.userId } }
-    : {};
+    const whereCondition = dto.userId ? { author: { id: dto.userId } } : {};
 
     return this.commonService.paginate(
       dto,
       this.postsRepository,
-      {...POST_FIND_OPTIONS, where: whereCondition},
+      { ...POST_FIND_OPTIONS, where: whereCondition },
       'posts',
     );
   }

@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
@@ -14,26 +14,28 @@ export class PostsModel extends BaseModel {
   @JoinColumn({ name: 'users_id' })
   author: UsersModel;
 
+  @IsOptional()
   @Column({
     length: 300,
     nullable: false,
   })
   @IsString()
-  title: string;
+  title: string = '';
 
+  @IsOptional()
   @Column({
     length: 6000,
     nullable: false,
   })
   @IsString()
-  content: string;
+  content: string = '';
 
   @Column({
     length: 6000,
     name: 'content_slate',
   })
   @IsString()
-  contentSlate: string;
+  contentSlate: string = '';
 
   // 1: public, 2: private
   @Column({
