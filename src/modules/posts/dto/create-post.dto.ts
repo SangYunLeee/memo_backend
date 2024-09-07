@@ -14,5 +14,5 @@ export class CreatePostDto extends PickType(PostsModel, [
 
   @IsOptional()
   @IsNumber()
-  categoryId?: number;
+  categoryId?: number = null;
 }
