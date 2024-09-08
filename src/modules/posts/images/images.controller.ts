@@ -13,11 +13,14 @@ import { ImagesService } from './images.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AccessTokenGuard } from 'src/modules/auth/guard/bearer-token.guard';
 import { Response } from 'express';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('posts/:postId/images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
+
   @Get('file/:filename')
+  @IsPublic()
   async getImageFile(
     @Param('filename') filename: string,
     @Res() res: Response,
