@@ -14,11 +14,15 @@ export class PaginatePostDto extends BasePaginationDto {
   @IsOptional()
   where__and__status__id__equal: number = 2; // published
 
+  @IsNumber()
+  @IsOptional()
+  where__and__author__id__equal: number;
+
   @IsString()
   @IsOptional()
   nickname: string;
 
-  @IsString()
+  @IsNumber()
   @IsOptional()
-  userId: number;
+  where__and__category__id__equal: number;
 }

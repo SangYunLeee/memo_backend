@@ -94,16 +94,15 @@ export class PostsService {
       const user = await this.usersService.getUserByNickname(nickname);
       dto = { ...dto,
         // 유저 미존재 시, stopFlag를 true로 설정하여 빈 배열을 반환하도록 한다.
-        userId: user?.id, stopFlag: !user,
+        where__and__author__id__equal: user?.id,
+        stopFlag: !user,
       };
     }
-
-    const whereCondition = dto.userId ? { author: { id: dto.userId } } : {};
 
     return this.commonService.paginate(
       dto,
       this.postsRepository,
-      { ...POST_FIND_OPTIONS, where: whereCondition },
+      { ...POST_FIND_OPTIONS },
       'posts',
     );
   }
