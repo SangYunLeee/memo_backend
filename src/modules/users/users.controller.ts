@@ -15,9 +15,19 @@ export class UsersController {
     return { user };
   }
 
-  @Get(':id')
+  @Get('id/:id')
   getUserById(@Param('id') id: string): Promise<UsersModel> {
     return this.usersService.getUserById(id);
+  }
+
+  @Get('nickname/:nickname')
+  async getUserByNickname(
+    @Param('nickname') nickname: string,
+  ) {
+    console.log('nickname:', nickname);
+    const user = await this.usersService.getUserByNickname(nickname);
+    console.log('user: ', user);
+    return { user };
   }
 
   @Get()
