@@ -16,14 +16,13 @@ export class UsersController {
   }
 
   @Get('id/:id')
-  getUserById(@Param('id') id: string): Promise<UsersModel> {
-    return this.usersService.getUserById(id);
+  async getUserById(@Param('id') id: string) {
+    const user = await this.usersService.getUserById(id);
+    return { user };
   }
 
   @Get('nickname/:nickname')
-  async getUserByNickname(
-    @Param('nickname') nickname: string,
-  ) {
+  async getUserByNickname(@Param('nickname') nickname: string) {
     console.log('nickname:', nickname);
     const user = await this.usersService.getUserByNickname(nickname);
     console.log('user: ', user);

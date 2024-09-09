@@ -30,8 +30,9 @@ export class CategoriesController {
   }
 
   @Get()
-  findAll(@Query() query: PaginateCategoryDto) {
-    return this.categoriesService.findAll(query);
+  async findAll(@Query() query: PaginateCategoryDto) {
+    const categories = await this.categoriesService.findAll(query);
+    return { categories };
   }
 
   @Get('me')
