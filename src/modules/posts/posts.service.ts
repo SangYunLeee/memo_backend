@@ -82,7 +82,8 @@ export class PostsService {
     const newPost = await this.postsRepository.save({
       ...post,
       ...filteredDto,
-      status: { id: postDto.statusId },
+      status: postDto.statusId && { id: postDto.statusId },
+      category: postDto.categoryId && { id: postDto.categoryId },
     });
 
     return await this.getPostById(newPost.id);
