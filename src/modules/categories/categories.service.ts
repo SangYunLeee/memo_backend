@@ -42,7 +42,14 @@ export class CategoriesService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return await this.categoriesRepository.update(id, updateCategoryDto);
+    const result = await this.categoriesRepository.update(
+      id,
+      updateCategoryDto,
+    );
+    if (result.affected === 0) {
+      throw new Error('Category not found');
+    }
+    return await this.findOne(id);
   }
 
   remove(id: number) {
