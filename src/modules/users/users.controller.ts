@@ -4,6 +4,7 @@ import { UsersModel } from './entity/users.entity';
 import { Get, Param, UseGuards } from '@nestjs/common';
 import { User } from './decorator/user.decorator';
 import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -21,6 +22,7 @@ export class UsersController {
     return { user };
   }
 
+  @IsPublic()
   @Get('nickname/:nickname')
   async getUserByNickname(@Param('nickname') nickname: string) {
     console.log('nickname:', nickname);
