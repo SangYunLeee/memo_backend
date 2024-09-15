@@ -37,4 +37,7 @@ export class UserImagesModel {
 
   @Column({ type: 'boolean', name: 'is_profile_image' })
   is_profile_image: boolean;
+
+  @Column({ type: 'boolean', name: 'pending_deletion' })
+  pendingDeletion: boolean;
 }

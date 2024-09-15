@@ -47,6 +47,7 @@ Table user_files {
   created_at timestamp [not null, default: `now()`]
   file_path varchar(1000) [not null]
   is_profile_image boolean [not null, default: false]
+  pending_deletion boolean [not null, default: false]
 }
 
 Table post_statuses {
