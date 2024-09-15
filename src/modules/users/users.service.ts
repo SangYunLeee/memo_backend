@@ -30,8 +30,28 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async getUserById(id: string): Promise<UsersModel> {
-    return this.usersRepository.findOne({ where: { id: +id } });
+  async getUserById(userId: string): Promise<UsersModel> {
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect(
+        'user.images',
+        'image',
+        'image.is_profile_image = :isProfileImage',
+        { isProfileImage: true },
+      )
+      .where('user.id = :userId', { userId })
+      .getOne();
+
+    if (!user) {
+      throw new BadRequestException('존재하지 않는 사용자입니다.');
+    }
+
+    // 프로필 이미지 설정
+    user.profileImage =
+      user.images && user.images.length > 0 ? user.images[0] : undefined;
+    // images 속성 제거 (이미 @Exclude 데코레이터가 적용되어 있다고 가정)
+    delete user.images;
+    return user;
   }
 
   async getUsersByIds(ids: number[]): Promise<UsersModel[]> {

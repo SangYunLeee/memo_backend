@@ -2,9 +2,10 @@ import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsString, Length } from 'class-validator';
-import { Exclude } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { PostsModel } from 'src/modules/posts/entities/post.entity';
 import { PostImagesModel } from 'src/modules/posts/images/entities/postImages.entity';
+import { UserImagesModel } from '../images/entity/usersImages.entity';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
@@ -41,4 +42,10 @@ export class UsersModel extends BaseModel {
   // RelationShip
   @OneToMany((type) => PostsModel, (post) => post.author)
   posts: PostsModel[];
+
+  @OneToMany(() => UserImagesModel, (image) => image.user)
+  images?: UserImagesModel[];
+
+  @Expose()
+  profileImage?: UserImagesModel;
 }

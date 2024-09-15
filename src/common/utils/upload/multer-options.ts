@@ -1,5 +1,10 @@
 import { createHash } from 'crypto';
-import { POSTS_IMAGES_FOLDER_PATH, TEMP_FOLDER_PATH } from './multer-path';
+import {
+  getImagePath,
+  POSTS_FOLDER_NAME,
+  PROFILE_FOLDER_NAME,
+  TEMP_FOLDER_PATH,
+} from './multer-path';
 import * as multer from 'multer';
 import { join } from 'path';
 
@@ -28,10 +33,24 @@ export const multerOption = {
       const minutes = now.getMinutes().toString().padStart(2, '0'); // 분
       const seconds = now.getSeconds().toString().padStart(2, '0'); // 초
       const formattedDate = `${year}${month}${day}${hours}${minutes}${seconds}`;
+
+      const type =
+        (req.path.startsWith('/users/me/profile/images') && 'profile') ||
+        (req.path.startsWith('/posts') && 'post') ||
+        undefined;
+
+      if (!type) {
+        return cb(new Error('Invalid path'), '');
+      }
+
+      const map = {
+        post: `post__${req.params.postId}`,
+        profile: 'profile',
+      };
       cb(
         null,
         // file name format: 20210723123456__userId_1__filename_originalname.jpg
-        `${formattedDate}__user__${req.user.id}__post__${req.params.postId}__${file.originalname}`,
+        `${formattedDate}__user__${req.user.id}__${map[type]}__${file.originalname}`,
       );
     },
   }),
@@ -42,7 +61,10 @@ export const multerOption = {
  * @param filename 원본 파일 이름
  * @returns 해싱된 경로
  */
-export function generateHashedPath(filename: string): string {
+export function generateHashedPath(
+  filename: string,
+  uploadType: 'post' | 'profile',
+): string {
   // 240905160349__user__8__post__30__k6-테스트-2-병목.drawio.png
   const split = filename.split('__');
   const originFilename = split[split.length - 1];
@@ -54,6 +76,7 @@ export function generateHashedPath(filename: string): string {
   const folder2 = hash.slice(2, 4); // ex: '2b'
   const folder3 = hash.slice(4, 6); // ex: '3c'
 
-  // 최종 경로 생성
-  return join(POSTS_IMAGES_FOLDER_PATH, folder1, folder2, folder3);
+  const basePath =
+    uploadType === 'post' ? POSTS_FOLDER_NAME : PROFILE_FOLDER_NAME;
+  return join(getImagePath(basePath), folder1, folder2, folder3);
 }

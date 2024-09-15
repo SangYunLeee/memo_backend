@@ -4,7 +4,7 @@ import { PostImagesModel } from './entities/postImages.entity';
 import { Repository } from 'typeorm';
 import { PostsService } from '../posts.service';
 import fs, { promises, mkdirSync, existsSync } from 'fs';
-import { generateHashedPath } from './const/multer-options';
+import { generateHashedPath } from '../../../common/utils/upload/multer-options';
 @Injectable()
 export class ImagesService {
   constructor(
@@ -14,7 +14,7 @@ export class ImagesService {
   ) {}
 
   async getImageFile(filename: string) {
-    const filePath = generateHashedPath(filename);
+    const filePath = generateHashedPath(filename, 'post');
     if (!existsSync(`${filePath}/${filename}`)) {
       console.log('Image not found');
       throw new NotFoundException('Image not found');
@@ -32,7 +32,7 @@ export class ImagesService {
       throw new Error('Post not found');
     }
     // postImages에 들어갈 이미지 경로 변수 수정
-    const imagePath = generateHashedPath(image.filename);
+    const imagePath = generateHashedPath(image.filename, 'post');
     const postImage = await this.imagesRepository.save({
       post: { id: postId },
       isThumbnail,

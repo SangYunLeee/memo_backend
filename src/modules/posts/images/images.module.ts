@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { ImagesService } from './images.service';
 import { ImagesController } from './images.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { multerOption } from './const/multer-options';
+import { multerOption } from '../../../common/utils/upload/multer-options';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { UsersModule } from 'src/modules/users/users.module';
 import { PostImagesModel } from './entities/postImages.entity';
