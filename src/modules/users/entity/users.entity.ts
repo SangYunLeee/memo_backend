@@ -35,6 +35,9 @@ export class UsersModel extends BaseModel {
   })
   role: RolesEnum;
 
+  @Column({ nullable: true, name: 'profile_description' })
+  profileDescription: string;
+
   // RelationShip
   @OneToMany((type) => PostsModel, (post) => post.author)
   posts: PostsModel[];

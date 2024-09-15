@@ -5,6 +5,7 @@ table users as u {
   password varchar(100) [not null]
   created_at timestamp [not null, default: `now()`]
   role varchar(10) [ default: '']
+  profile_description varchar(500) [note: '사용자 프로필 소개']
 }
 
 table posts as p {
@@ -45,6 +46,7 @@ Table user_files {
   mime_type varchar(100)
   created_at timestamp [not null, default: `now()`]
   file_path varchar(1000) [not null]
+  is_profile_image boolean [not null, default: false]
 }
 
 Table post_statuses {
