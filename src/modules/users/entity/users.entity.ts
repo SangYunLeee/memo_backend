@@ -1,11 +1,12 @@
 import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { BaseModel } from 'src/common/entity/base.entity';
-import { IsEmail, IsString, Length } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 import { PostsModel } from 'src/modules/posts/entities/post.entity';
 import { PostImagesModel } from 'src/modules/posts/images/entities/postImages.entity';
 import { UserImagesModel } from '../images/entity/usersImages.entity';
+import { UpdateProfileDto } from '../dto/update-profile.dto';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
@@ -36,6 +37,7 @@ export class UsersModel extends BaseModel {
   })
   role: RolesEnum;
 
+  @IsString()
   @Column({ nullable: true, name: 'profile_description' })
   profileDescription: string;
 
@@ -48,4 +50,14 @@ export class UsersModel extends BaseModel {
 
   @Expose()
   profileImage?: UserImagesModel;
+
+  updateProfileInfo(updateDto: UpdateProfileDto) {
+    if (updateDto.nickname) {
+      this.nickname = updateDto.nickname;
+    }
+    if (updateDto.profileDescription) {
+      this.profileDescription = updateDto.profileDescription;
+    }
+    return this;
+  }
 }

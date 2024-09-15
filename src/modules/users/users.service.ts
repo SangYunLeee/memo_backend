@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersModel } from './entity/users.entity';
 import { In, Repository } from 'typeorm';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -71,5 +72,20 @@ export class UsersService {
 
   async getUserByEmail(email: string): Promise<UsersModel> {
     return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async updateProfileInfo(userId: number, updateDto: UpdateProfileDto) {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
+    const existNickname = await this.usersRepository.exists({
+      where: { nickname: user.nickname },
+    });
+    if (existNickname) {
+      throw new BadRequestException('이미 존재하는 닉네임입니다.');
+    }
+    user.updateProfileInfo(updateDto);
+    return this.usersRepository.save(user);
   }
 }

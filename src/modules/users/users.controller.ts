@@ -1,10 +1,11 @@
-import { Controller } from '@nestjs/common';
+import { Body, Controller, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UsersModel } from './entity/users.entity';
 import { Get, Param, UseGuards } from '@nestjs/common';
 import { User } from './decorator/user.decorator';
 import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Controller('users')
 export class UsersController {
@@ -34,5 +35,18 @@ export class UsersController {
   @Get()
   getAllUsers(): Promise<UsersModel[]> {
     return this.usersService.getAllUsers();
+  }
+
+  @Patch('me/profile')
+  @UseGuards(AccessTokenGuard)
+  async updateMyProfileInfo(
+    @User('id') userId: number,
+    @Body() updateDto: UpdateProfileDto,
+  ) {
+    const updatedUser = await this.usersService.updateProfileInfo(
+      userId,
+      updateDto,
+    );
+    return { user: updatedUser };
   }
 }
