@@ -3,10 +3,12 @@ import { PostsModel } from './posts/entities/post.entity';
 import { PostImagesModel } from './posts/images/entities/postImages.entity';
 import { PostStatusModel } from './posts/entities/post-status.entity';
 import { CategoryModel } from './categories/entities/category.entity';
+import { UserImagesModel } from './users/images/entity/usersImages.entity';
 export const entities = [
   UsersModel,
   PostsModel,
   PostImagesModel,
   PostStatusModel,
   CategoryModel,
+  UserImagesModel,
 ];

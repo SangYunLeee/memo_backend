@@ -6,7 +6,7 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { UsersModel } from './users.entity';
+import { UsersModel } from '../../entity/users.entity';
 
 @Entity('user_files')
 export class UserImagesModel {
