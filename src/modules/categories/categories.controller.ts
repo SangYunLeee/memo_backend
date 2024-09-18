@@ -15,13 +15,13 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { AccessTokenGuard } from 'src/modules/auth/guard/bearer-token.guard';
 import { User } from '../users/decorator/user.decorator';
 import { PaginateCategoryDto } from './dto/paginte-category.dto';
+import { IsPublic } from 'src/common/decorator/is-public.decorator';
 
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Post()
-  @UseGuards(AccessTokenGuard)
   create(
     @Body() createCategoryDto: CreateCategoryDto,
     @User('id') userId: number,
@@ -30,19 +30,18 @@ export class CategoriesController {
   }
 
   @Get()
+  @IsPublic()
   async findAll(@Query() query: PaginateCategoryDto) {
     const categories = await this.categoriesService.findAll(query);
     return { categories };
   }
 
   @Get('me')
-  @UseGuards(AccessTokenGuard)
   findMine(@User('id') userId: number) {
     return this.categoriesService.findAll({ userId });
   }
 
   @Patch(':id')
-  @UseGuards(AccessTokenGuard)
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -51,7 +50,6 @@ export class CategoriesController {
   }
 
   @Delete(':id')
-  @UseGuards(AccessTokenGuard)
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
   }

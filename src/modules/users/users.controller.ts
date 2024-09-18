@@ -12,7 +12,6 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  @UseGuards(AccessTokenGuard)
   getMyUser(@User() user: UsersModel): { user: UsersModel } {
     return { user };
   }
@@ -38,7 +37,6 @@ export class UsersController {
   }
 
   @Patch('me/profile')
-  @UseGuards(AccessTokenGuard)
   async updateMyProfileInfo(
     @User('id') userId: number,
     @Body() updateDto: UpdateProfileDto,
