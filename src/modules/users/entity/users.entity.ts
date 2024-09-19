@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
@@ -49,6 +49,7 @@ export class UsersModel extends BaseModel {
   images?: UserImagesModel[];
 
   @Expose()
+  @OneToOne(() => UserImagesModel, (image) => image.user)
   profileImage?: UserImagesModel;
 
   updateProfileInfo(updateDto: UpdateProfileDto) {

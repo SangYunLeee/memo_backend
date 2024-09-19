@@ -9,6 +9,7 @@ import { CommonService } from 'src/common/common.service';
 import { POST_FIND_OPTIONS } from './const/post-find-options';
 import { omitBy, isNil } from 'lodash';
 import { UsersService } from '../users/users.service';
+
 @Injectable()
 export class PostsService {
   constructor(
@@ -18,25 +19,48 @@ export class PostsService {
     private readonly usersService: UsersService,
   ) {}
 
+  private createBaseQueryBuilder(repo: Repository<PostsModel>) {
+    return repo
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.category', 'category')
+      .leftJoinAndSelect('post.status', 'status')
+      .leftJoinAndSelect(
+        'author.profileImage',
+        'authorImage',
+        'authorImage.is_profile_image = :isProfileImage',
+        { isProfileImage: true },
+      )
+      .select(['post', 'author', 'category', 'status', 'authorImage']);
+  }
+
+  private mapPostUserImage(post: PostsModel): PostsModel {
+    post.author.profileImage = post?.userImage || null;
+    delete post.userImage;
+    return post;
+  }
+
   getPostRepository(qr?: QueryRunner) {
     return qr ? qr.manager.getRepository(PostsModel) : this.postsRepository;
   }
 
   async getAllPosts() {
-    return this.postsRepository.find({
+    const posts = await this.postsRepository.find({
       ...POST_FIND_OPTIONS,
     });
+    return posts.map(this.mapPostUserImage);
   }
 
   async getPostById(id: number, qr?: QueryRunner): Promise<PostsModel> {
     const repo = this.getPostRepository(qr);
-    const post = await repo.findOne({
-      ...POST_FIND_OPTIONS,
-      where: { id },
-    });
+    const post = await this.createBaseQueryBuilder(repo)
+      .where('post.id = :id', { id })
+      .getOne();
+
     if (!post) {
       throw new NotFoundException(`Post with ID ${id} not found`);
     }
+
     return post;
   }
 
@@ -58,7 +82,7 @@ export class PostsService {
     });
     const createdPost = await repo.save(post);
     const newPost = await this.getPostById(createdPost.id, qr);
-    return newPost;
+    return this.mapPostUserImage(newPost);
   }
 
   async deletePostById(id: number): Promise<void> {
@@ -86,26 +110,31 @@ export class PostsService {
       category: postDto.categoryId && { id: postDto.categoryId },
     });
 
-    return await this.getPostById(newPost.id);
+    const updatedPost = await this.getPostById(newPost.id);
+    return this.mapPostUserImage(updatedPost);
   }
 
   async paginatePosts(dto: PaginatePostDto) {
     const { nickname } = dto;
     if (nickname) {
       const user = await this.usersService.getUserByNickname(nickname);
-      dto = { ...dto,
-        // 유저 미존재 시, stopFlag를 true로 설정하여 빈 배열을 반환하도록 한다.
+      dto = {
+        ...dto,
         where__and__author__id__equal: user?.id,
         stopFlag: !user,
       };
     }
 
-    return this.commonService.paginate(
+    const queryBuilder = this.createBaseQueryBuilder(this.postsRepository);
+
+    const posts = await this.commonService.paginate(
       dto,
       this.postsRepository,
-      { ...POST_FIND_OPTIONS },
+      {},
       'posts',
+      queryBuilder, // queryBuilder를 추가로 전달
     );
+    return posts;
   }
 
   async generatePosts(userId: number) {

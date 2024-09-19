@@ -9,9 +9,4 @@ export const POST_FIND_OPTIONS: FindManyOptions<PostsModel> = {
     contentSlate: true,
     createdAt: true,
   },
-  relations: {
-    author: true,
-    status: true,
-    category: true,
-  },
 };

@@ -5,6 +5,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { PostStatusModel } from './post-status.entity';
 import { PostImagesModel } from '../images/entities/postImages.entity';
 import { CategoryModel } from 'src/modules/categories/entities/category.entity';
+import { UserImagesModel } from 'src/modules/users/images/entity/usersImages.entity';
 
 @Entity('posts')
 export class PostsModel extends BaseModel {
@@ -57,4 +58,8 @@ export class PostsModel extends BaseModel {
   @ManyToOne((category) => CategoryModel, (category) => category.posts)
   @JoinColumn({ name: 'cate_id' })
   category: CategoryModel;
+
+  @ManyToOne(() => UserImagesModel, (userImage) => userImage.posts)
+  @JoinColumn({ name: 'users_id' })
+  userImage: UserImagesModel;
 }

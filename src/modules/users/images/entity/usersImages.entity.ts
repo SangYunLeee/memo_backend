@@ -5,9 +5,11 @@ import {
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { UsersModel } from '../../entity/users.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { PostsModel } from 'src/modules/posts/entities/post.entity';
 
 @Entity('user_files')
 export class UserImagesModel {
@@ -17,6 +19,9 @@ export class UserImagesModel {
   @ManyToOne(() => UsersModel)
   @JoinColumn({ name: 'user_id' })
   user: UsersModel;
+
+  @Column({ type: 'int', name: 'user_id' })
+  userId: number;
 
   @Column({
     type: 'varchar',
@@ -30,7 +35,6 @@ export class UserImagesModel {
     type: 'varchar',
     length: 255,
     name: 'stored_filename',
-    select: false,
   })
   storedFilename: string;
 
@@ -62,6 +66,9 @@ export class UserImagesModel {
 
   @Expose()
   get url(): string {
-    return `${process.env.BACKEND_URL}/users/${this.user}/profile/images/file/${this.storedFilename}`;
+    return `${process.env.BACKEND_URL}/users/${this.userId}/profile/images/file/${this.storedFilename}`;
   }
+
+  @OneToMany(() => PostsModel, (post) => post.userImage)
+  posts: PostsModel[];
 }

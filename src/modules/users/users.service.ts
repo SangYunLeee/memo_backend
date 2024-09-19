@@ -31,47 +31,68 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async getUserById(userId: string): Promise<UsersModel> {
-    const user = await this.usersRepository
+  private async getUsersWithProfileImage(options?: {
+    userIds?: number[];
+    email?: string;
+    nickname?: string;
+  }): Promise<UsersModel[]> {
+    const queryBuilder = this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect(
         'user.images',
         'image',
         'image.is_profile_image = :isProfileImage',
         { isProfileImage: true },
-      )
-      .where('user.id = :userId', { userId })
-      .getOne();
+      );
 
-    if (!user) {
-      throw new BadRequestException('존재하지 않는 사용자입니다.');
+    if (options?.userIds && options.userIds.length > 0) {
+      queryBuilder.where('user.id IN (:...userIds)', {
+        userIds: options.userIds,
+      });
+    } else if (options?.email) {
+      queryBuilder.where('user.email = :email', { email: options.email });
+    } else if (options?.nickname) {
+      queryBuilder.where('user.nickname = :nickname', {
+        nickname: options.nickname,
+      });
     }
 
-    // 프로필 이미지 설정
-    user.profileImage =
-      user.images && user.images.length > 0 ? user.images[0] : undefined;
-    // images 속성 제거 (이미 @Exclude 데코레이터가 적용되어 있다고 가정)
-    delete user.images;
-    return user;
-  }
+    const users = await queryBuilder.getMany();
 
-  async getUsersByIds(ids: number[]): Promise<UsersModel[]> {
-    return this.usersRepository.find({
-      where: { id: In(ids) },
+    return users.map((user) => {
+      user.profileImage =
+        user.images && user.images.length > 0 ? user.images[0] : undefined;
+      delete user.images;
+      return user;
     });
   }
 
-  async getUserByNickname(nickname: string): Promise<UsersModel> {
-    const user = await this.usersRepository.findOne({ where: { nickname } });
-    return user;
+  async getUserById(userId: number): Promise<UsersModel> {
+    const users = await this.getUsersWithProfileImage({ userIds: [userId] });
+    if (users.length === 0) {
+      throw new BadRequestException('존재하지 않는 사용자입니다.');
+    }
+    return users[0];
   }
 
-  async getAllUsers(): Promise<UsersModel[]> {
-    return this.usersRepository.find();
+  async getUsersByIds(ids: number[]): Promise<UsersModel[]> {
+    return this.getUsersWithProfileImage({ userIds: ids });
+  }
+
+  async getUserByNickname(nickname: string): Promise<UsersModel> {
+    const users = await this.getUsersWithProfileImage({ nickname });
+    if (users.length === 0) {
+      throw new BadRequestException('존재하지 않는 닉네임입니다.');
+    }
+    return users[0];
   }
 
   async getUserByEmail(email: string): Promise<UsersModel> {
-    return this.usersRepository.findOne({ where: { email } });
+    const users = await this.getUsersWithProfileImage({ email });
+    if (users.length === 0) {
+      throw new BadRequestException('존재하지 않는 이메일입니다.');
+    }
+    return users[0];
   }
 
   async updateProfileInfo(userId: number, updateDto: UpdateProfileDto) {
@@ -80,12 +101,13 @@ export class UsersService {
       throw new Error('사용자를 찾을 수 없습니다.');
     }
     const existNickname = await this.usersRepository.exists({
-      where: { nickname: user.nickname },
+      where: { nickname: updateDto.nickname },
     });
     if (existNickname) {
       throw new BadRequestException('이미 존재하는 닉네임입니다.');
     }
     user.updateProfileInfo(updateDto);
-    return this.usersRepository.save(user);
+    this.usersRepository.save(user);
+    return this.getUsersWithProfileImage({ userIds: [userId] })[0];
   }
 }

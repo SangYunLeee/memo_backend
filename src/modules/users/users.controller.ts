@@ -12,12 +12,13 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
-  getMyUser(@User() user: UsersModel): { user: UsersModel } {
+  async getMyUser(@User('id') userId: number) {
+    const user = await this.usersService.getUserById(userId);
     return { user };
   }
 
   @Get(':id')
-  async getUserById(@Param('id') id: string) {
+  async getUserById(@Param('id') id: number) {
     const user = await this.usersService.getUserById(id);
     return { user };
   }
@@ -29,11 +30,6 @@ export class UsersController {
     const user = await this.usersService.getUserByNickname(nickname);
     console.log('user: ', user);
     return { user };
-  }
-
-  @Get()
-  getAllUsers(): Promise<UsersModel[]> {
-    return this.usersService.getAllUsers();
   }
 
   @Patch('me/profile')
