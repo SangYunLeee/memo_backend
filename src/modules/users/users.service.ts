@@ -39,7 +39,7 @@ export class UsersService {
     const queryBuilder = this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect(
-        'user.images',
+        'user.profileImage',
         'image',
         'image.is_profile_image = :isProfileImage',
         { isProfileImage: true },
@@ -59,12 +59,7 @@ export class UsersService {
 
     const users = await queryBuilder.getMany();
 
-    return users.map((user) => {
-      user.profileImage =
-        user.images && user.images.length > 0 ? user.images[0] : undefined;
-      delete user.images;
-      return user;
-    });
+    return users;
   }
 
   async getUserById(userId: number): Promise<UsersModel> {
@@ -100,12 +95,16 @@ export class UsersService {
     if (!user) {
       throw new Error('사용자를 찾을 수 없습니다.');
     }
-    const existNickname = await this.usersRepository.exists({
-      where: { nickname: updateDto.nickname },
-    });
-    if (existNickname) {
-      throw new BadRequestException('이미 존재하는 닉네임입니다.');
+
+    if (updateDto.nickname !== user.nickname) {
+      const existNickname = await this.usersRepository.exists({
+        where: { nickname: updateDto.nickname },
+      });
+      if (existNickname) {
+        throw new BadRequestException('이미 존재하는 닉네임입니다.');
+      }
     }
+
     user.updateProfileInfo(updateDto);
     this.usersRepository.save(user);
     return this.getUsersWithProfileImage({ userIds: [userId] })[0];
