@@ -6,6 +6,7 @@ table users as u {
   created_at timestamp [not null, default: `now()`]
   role varchar(10) [ default: '']
   profile_description varchar(500) [note: '사용자 프로필 소개']
+
 }
 
 table posts as p {
@@ -63,14 +64,25 @@ Table visibility_levels {
 Table post_images {
   id integer [pk, increment]
   post_id integer []
-  is_thumbnail boolean [not null, default: false]  // 임시 파일 여부
+  is_thumbnail boolean [not null, default: false]
   original_filename varchar(255) [not null]
   stored_filename varchar(255) [not null]
   file_size bigint [not null]
   mime_type varchar(100)
   created_at timestamp [not null, default: `now()`]
   file_path varchar(1000) [not null]
-  is_temporary boolean [not null, default: true]  // 임시 파일 여부
+}
+
+Table post_files {
+  id integer [pk, increment]
+  post_id integer []
+  original_filename varchar(255) [not null]
+  stored_filename varchar(255) [not null]
+  file_size bigint [not null]
+  mime_type varchar(100)
+  created_at timestamp [not null, default: `now()`]
+  file_path varchar(1000) [not null]
 }
 
 Ref: post_images.post_id > posts.id [delete: set null]
+Ref: post_files.post_id > posts.id [delete: set null]
