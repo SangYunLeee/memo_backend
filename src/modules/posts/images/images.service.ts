@@ -14,7 +14,7 @@ export class ImagesService {
   ) {}
 
   async getImageFile(filename: string) {
-    const filePath = generateHashedPath(filename, 'post');
+    const filePath = generateHashedPath(filename, 'postImage');
     if (!existsSync(`${filePath}/${filename}`)) {
       console.log('Image not found');
       throw new NotFoundException('Image not found');
@@ -32,7 +32,7 @@ export class ImagesService {
       throw new Error('Post not found');
     }
     // postImages에 들어갈 이미지 경로 변수 수정
-    const imagePath = generateHashedPath(image.filename, 'post');
+    const imagePath = generateHashedPath(image.filename, 'postImage');
     const postImage = await this.imagesRepository.save({
       post: { id: postId },
       isThumbnail,

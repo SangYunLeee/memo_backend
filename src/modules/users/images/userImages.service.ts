@@ -12,7 +12,7 @@ export class ImagesService {
   ) {}
 
   async getImageFile(filename: string) {
-    const filePath = generateHashedPath(filename, 'profile');
+    const filePath = generateHashedPath(filename, 'profileImage');
     if (!existsSync(`${filePath}/${filename}`)) {
       console.log('Image not found');
       throw new NotFoundException('Image not found');
@@ -35,7 +35,7 @@ export class ImagesService {
     // 이미지 파일 삭제 로직 별도 추가 (비동기 데몬으로 처리 고려)
 
     // postImages에 들어갈 이미지 경로 변수 수정
-    const imagePath = generateHashedPath(image.filename, 'profile');
+    const imagePath = generateHashedPath(image.filename, 'profileImage');
     const profileImage = await this.imagesRepository.save({
       user: { id: userId },
       originalFilename: image.originalname,

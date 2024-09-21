@@ -25,15 +25,14 @@ export class PostsService {
       .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('post.category', 'category')
       .leftJoinAndSelect('post.status', 'status')
+      .leftJoinAndSelect('post.postFiles', 'postFiles')
       .leftJoinAndSelect(
         'author.profileImage',
         'authorImage',
         'authorImage.is_profile_image = :isProfileImage',
         { isProfileImage: true },
-      )
-      .select(['post', 'author', 'category', 'status', 'authorImage']);
+      );
   }
-
   private mapPostUserImage(post: PostsModel): PostsModel {
     post.author.profileImage = post?.userImage || null;
     delete post.userImage;

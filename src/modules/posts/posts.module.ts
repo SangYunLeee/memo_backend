@@ -10,12 +10,14 @@ import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { CategoriesModule } from '../categories/categories.module';
+import { PostFilesModule } from './files/postFiles.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PostsModel]),
     CommonModule,
     ImagesModule,
+    PostFilesModule,
     AuthModule,
     UsersModule,
     CategoriesModule,

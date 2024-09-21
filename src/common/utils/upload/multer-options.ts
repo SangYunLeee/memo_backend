@@ -14,11 +14,14 @@ export const multerOption = {
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-      cb(null, true);
-    } else {
-      cb(new Error('지원하지 않는 파일 형식입니다.'), false);
+    const isImageUpload = req.path.includes('images');
+    if (isImageUpload) {
+      const isValidImageType = file.mimetype.match(/\/(jpg|jpeg|png|gif)$/);
+      if (!isValidImageType) {
+        cb(new Error('지원하지 않는 파일 형식입니다.'), false);
+      }
     }
+    cb(null, true);
   },
   storage: multer.diskStorage({
     destination: ((req, file, cb) => {
@@ -63,7 +66,7 @@ export const multerOption = {
  */
 export function generateHashedPath(
   filename: string,
-  uploadType: 'post' | 'profile',
+  uploadType: 'postImage' | 'profileImage' | 'postFile',
 ): string {
   // 240905160349__user__8__post__30__k6-테스트-2-병목.drawio.png
   const split = filename.split('__');
@@ -76,7 +79,11 @@ export function generateHashedPath(
   const folder2 = hash.slice(2, 4); // ex: '2b'
   const folder3 = hash.slice(4, 6); // ex: '3c'
 
-  const basePath =
-    uploadType === 'post' ? POSTS_FOLDER_NAME : PROFILE_FOLDER_NAME;
+  const map = {
+    postImage: `${POSTS_FOLDER_NAME}/images`,
+    profileImage: `${PROFILE_FOLDER_NAME}/images`,
+    postFile: `${POSTS_FOLDER_NAME}/files`,
+  };
+  const basePath = map[uploadType];
   return join(getImagePath(basePath), folder1, folder2, folder3);
 }
