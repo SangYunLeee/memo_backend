@@ -50,6 +50,10 @@ export const multerOption = {
         post: `post__${req.params.postId}`,
         profile: 'profile',
       };
+
+      // 파일명 디코딩
+      const decodedFilename = decodeURIComponent(file.originalname);
+      file.originalname = decodedFilename;
       cb(
         null,
         // file name format: 20210723123456__userId_1__filename_originalname.jpg
