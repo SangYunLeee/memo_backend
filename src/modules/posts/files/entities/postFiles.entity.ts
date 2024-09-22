@@ -50,6 +50,9 @@ export class PostFilesModel {
     return `${process.env.BACKEND_URL}/posts/${this.postId}/files/file/${this.storedFilename}`;
   }
 
+  @Column({ type: 'boolean', default: false, name: 'pending_deletion' })
+  pendingDeletion: boolean;
+
   constructor(partial: Partial<PostFilesModel>) {
     Object.assign(this, partial);
   }

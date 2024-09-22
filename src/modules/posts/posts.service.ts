@@ -25,7 +25,14 @@ export class PostsService {
       .leftJoinAndSelect('post.author', 'author')
       .leftJoinAndSelect('post.category', 'category')
       .leftJoinAndSelect('post.status', 'status')
-      .leftJoinAndSelect('post.postFiles', 'postFiles')
+      .leftJoinAndSelect(
+        'post.postFiles',
+        'postFiles',
+        'postFiles.pendingDeletion = :pendingDeletion',
+        {
+          pendingDeletion: false,
+        },
+      )
       .leftJoinAndSelect(
         'author.profileImage',
         'authorImage',

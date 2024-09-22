@@ -29,7 +29,8 @@ export class PostFilesService {
     if (!file) {
       throw new NotFoundException('File not found');
     }
-    await this.postFilesRepository.delete({ id: fileId });
+    file.pendingDeletion = true;
+    await this.postFilesRepository.save(file);
     // TODO: 파일 삭제
     // 추후 데몬 프로세스로 처리
   }
