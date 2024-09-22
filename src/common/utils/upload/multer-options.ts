@@ -9,9 +9,9 @@ import * as multer from 'multer';
 import { join } from 'path';
 
 export const multerOption = {
-  // file size limit 5MB
+  // file size limit 100MB
   limits: {
-    fileSize: 5 * 1024 * 1024,
+    fileSize: 100 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     const isImageUpload = req.path.includes('images');
@@ -53,7 +53,7 @@ export const multerOption = {
       cb(
         null,
         // file name format: 20210723123456__userId_1__filename_originalname.jpg
-        `${formattedDate}__user__${req.user.id}__${map[type]}__${file.originalname}`,
+        `${formattedDate}__user__${req.user.id}__${map[type]}___${file.originalname}`,
       );
     },
   }),
@@ -69,7 +69,7 @@ export function generateHashedPath(
   uploadType: 'postImage' | 'profileImage' | 'postFile',
 ): string {
   // 240905160349__user__8__post__30__k6-테스트-2-병목.drawio.png
-  const split = filename.split('__');
+  const split = filename.split('___');
   const originFilename = split[split.length - 1];
   // md5 해시 생성
   const hash = createHash('md5').update(originFilename).digest('hex');

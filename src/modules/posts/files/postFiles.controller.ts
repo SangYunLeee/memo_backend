@@ -24,7 +24,14 @@ export class PostFilesController {
   @IsPublic()
   async getFile(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = await this.postFilesService.getFile(filename);
-    return res.sendFile(filePath);
+    const split = filename.split('___');
+    const originalFilename = split[split.length - 1];
+    const safeFilename = encodeURIComponent(originalFilename);
+    res.sendFile(filePath, {
+      headers: {
+        'Content-Disposition': `attachment; filename*=UTF-8''${safeFilename}`,
+      },
+    });
   }
 
   @Post()
@@ -40,7 +47,6 @@ export class PostFilesController {
   @Delete(':fileId')
   @UseGuards(AccessTokenGuard)
   async deleteFile(@Param('fileId') fileId: number) {
-    console.log(fileId);
     await this.postFilesService.deleteFile(fileId);
     return { message: 'File deleted' };
   }

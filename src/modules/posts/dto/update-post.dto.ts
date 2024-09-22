@@ -5,5 +5,5 @@ import { IsNumber, IsOptional } from 'class-validator';
 export class UpdatePostDto extends PartialType(CreatePostDto) {
   @IsOptional()
   @IsNumber()
-  statusId: number = undefined;
+  statusId: number = 2;
 }
