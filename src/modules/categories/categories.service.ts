@@ -3,7 +3,8 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryModel } from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { ReorderCategoryDto } from './dto/reorder-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -18,9 +19,9 @@ export class CategoriesService {
     });
   }
 
-  async findAll({ userId }: { userId?: number } = {}) {
+  async findAll({ userId, ids }: { userId?: number; ids?: number[] } = {}) {
     return await this.categoriesRepository.find({
-      where: { user: { id: userId } },
+      where: { user: { id: userId }, id: ids ? In(ids) : undefined },
       select: {
         id: true,
         pos: true,
@@ -28,6 +29,7 @@ export class CategoriesService {
         user: { id: true },
       },
       relations: ['user'],
+      order: { pos: 'ASC' },
     });
   }
 
@@ -54,5 +56,27 @@ export class CategoriesService {
 
   remove(id: number) {
     return this.categoriesRepository.delete(id);
+  }
+
+  async reorderCategories(reorderDto: ReorderCategoryDto) {
+    const { categoryOrders } = reorderDto;
+
+    // 벌크 업데이트 수행
+    await this.categoriesRepository
+      .createQueryBuilder()
+      .update(CategoryModel)
+      .set({
+        pos: () =>
+          'CASE id ' +
+          categoryOrders
+            .map((item) => `WHEN ${item.id} THEN ${item.pos}`)
+            .join(' ') +
+          ' END',
+      })
+      .whereInIds(categoryOrders.map((item) => item.id))
+      .execute();
+
+    // 업데이트된 카테고리 반환
+    return this.findAll({ ids: categoryOrders.map((item) => item.id) });
   }
 }

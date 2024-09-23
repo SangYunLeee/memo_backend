@@ -16,6 +16,7 @@ import { AccessTokenGuard } from 'src/modules/auth/guard/bearer-token.guard';
 import { User } from '../users/decorator/user.decorator';
 import { PaginateCategoryDto } from './dto/paginte-category.dto';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { ReorderCategoryDto } from './dto/reorder-category.dto';
 
 @Controller('categories')
 export class CategoriesController {
@@ -41,6 +42,11 @@ export class CategoriesController {
     return this.categoriesService.findAll({ userId });
   }
 
+  @Patch('reorder')
+  async reorderCategories(@Body() reorderDto: ReorderCategoryDto) {
+    return this.categoriesService.reorderCategories(reorderDto);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -53,4 +59,6 @@ export class CategoriesController {
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
   }
+
+
 }
