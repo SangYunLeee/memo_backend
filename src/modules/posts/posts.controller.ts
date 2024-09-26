@@ -24,21 +24,26 @@ export class PostsController {
   @Post()
   @UseGuards(CategoryCheck)
   async createPost(@Body() postDto: CreatePostDto, @User('id') userId: number) {
-    const post = await this.postsService.createPost(postDto, userId);
+    postDto.assign({ userId });
+    const post = await this.postsService.createPost(postDto);
     return { post };
   }
 
   @Get()
   @IsPublic()
-  async getPosts(@Query() query: PaginatePostDto) {
+  async getPosts(@Query() query: PaginatePostDto, @User('id') userId?: number) {
+    query.assign({ userId });
     const posts = await this.postsService.paginatePosts(query);
     return { posts };
   }
 
   @Get(':postId')
   @IsPublic()
-  async getPostById(@Param('postId') postId: string) {
-    const post = await this.postsService.getPostById(+postId);
+  async getPostById(
+    @Param('postId') postId: string,
+    @User('id') userId?: number,
+  ) {
+    const post = await this.postsService.getPostById(+postId, userId);
     return { post };
   }
 
@@ -48,14 +53,16 @@ export class PostsController {
   async updatePost(
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,
+    @User('id') userId: number,
   ) {
+    updatePostDto.assign({ userId });
     const post = await this.postsService.updatePost(+postId, updatePostDto);
     return { post };
   }
 
   @Delete(':postId')
   @UseGuards(IsPostMineOrAdminGuard)
-  deletePostById(@Param('postId') postId: string) {
-    return this.postsService.deletePostById(+postId);
+  deletePostById(@Param('postId') postId: string, @User('id') userId: number) {
+    return this.postsService.deletePostById(+postId, userId);
   }
 }

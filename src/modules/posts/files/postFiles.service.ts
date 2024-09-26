@@ -35,8 +35,12 @@ export class PostFilesService {
     // 추후 데몬 프로세스로 처리
   }
 
-  async createPostFile(postId: number, file: Express.Multer.File) {
-    const post = await this.postsService.getPostById(postId);
+  async createPostFile(
+    postId: number,
+    file: Express.Multer.File,
+    userId: number,
+  ) {
+    const post = await this.postsService.getPostById(postId, userId);
     if (!post) {
       throw new Error('Post not found');
     }

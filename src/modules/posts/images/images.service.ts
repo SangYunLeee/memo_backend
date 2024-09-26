@@ -26,8 +26,9 @@ export class ImagesService {
     postId: number,
     isThumbnail: boolean,
     image: Express.Multer.File,
+    userId: number,
   ) {
-    const post = await this.postsService.getPostById(postId);
+    const post = await this.postsService.getPostById(postId, userId);
     if (!post) {
       throw new Error('Post not found');
     }

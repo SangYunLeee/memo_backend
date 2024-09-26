@@ -1,18 +1,7 @@
-import { PickType } from '@nestjs/mapped-types';
-import { PostsModel } from '../entities/post.entity';
-import { IsOptional, IsNumber } from 'class-validator';
-import { Expose, Transform } from 'class-transformer';
+import { CreatePostDtoModel } from './create-post.dtoModel';
 
-export class CreatePostDto extends PickType(PostsModel, [
-  'title',
-  'content',
-  'contentSlate',
-]) {
-  @IsOptional()
-  @IsNumber()
-  statusId: number = 2;
-
-  @IsOptional()
-  @IsNumber()
-  categoryId?: number = null;
+export class CreatePostDto extends CreatePostDtoModel {
+  assign(params: Partial<CreatePostDto>): void {
+    Object.assign(this, params);
+  }
 }

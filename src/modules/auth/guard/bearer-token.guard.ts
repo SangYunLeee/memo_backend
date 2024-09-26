@@ -26,37 +26,33 @@ export class BearerTokenGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
-    if (isPublic) {
-      return true;
-    }
     const req = context.switchToHttp().getRequest();
     const rawToken = req.headers['authorization'];
 
-    if (!rawToken) {
+    if (rawToken) {
+      try {
+        const token = this.authService.extractTokenFromHeader(rawToken, true);
+        const result = await this.authService.verifyToken(token);
+        const user = await this.usersService.getUserByEmail(result.email);
+
+        req.user = user;
+        req.token = token;
+        req.tokenType = result.type;
+
+        if (!isPublic && req.tokenType !== this.getTokenType()) {
+          throw new UnauthorizedException(
+            `${this.getTokenType()} Token이 아닙니다.`,
+          );
+        }
+      } catch (error) {
+        if (!isPublic) {
+          throw new UnauthorizedException('유효하지 않은 토큰입니다.');
+        }
+      }
+    } else if (!isPublic) {
       throw new UnauthorizedException('토큰이 없습니다!');
     }
 
-    const token = this.authService.extractTokenFromHeader(rawToken, true);
-    const result = await this.authService.verifyToken(token);
-
-    /**
-     * request에 넣을 정보
-     *
-     * 1) 사용자 정보 - user
-     * 2) token - token
-     * 3) tokenType - access | refresh
-     */
-    const user = await this.usersService.getUserByEmail(result.email);
-
-    req.user = user;
-    req.token = token;
-    req.tokenType = result.type;
-
-    if (req.tokenType !== this.getTokenType()) {
-      throw new UnauthorizedException(
-        `${this.getTokenType()} Token이 아닙니다.`,
-      );
-    }
     return true;
   }
 }

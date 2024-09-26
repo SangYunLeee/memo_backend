@@ -1,28 +1,7 @@
-import { BasePaginationDto } from 'src/common/dto/base-pagination.dto';
-import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import { PaginatePostDtoModel } from './paginte-post.dtoModel';
 
-export class PaginatePostDto extends BasePaginationDto {
-  @IsString()
-  @IsOptional()
-  where__content__i_like: string;
-
-  @IsString()
-  @IsOptional()
-  where__title__i_like: string;
-
-  @IsNumber()
-  @IsOptional()
-  where__and__status__id__equal: number = 2; // published
-
-  @IsNumber()
-  @IsOptional()
-  where__and__author__id__equal: number;
-
-  @IsString()
-  @IsOptional()
-  nickname: string;
-
-  @IsNumber()
-  @IsOptional()
-  where__and__category__id__equal: number;
+export class PaginatePostDto extends PaginatePostDtoModel {
+  assign(params: Partial<PaginatePostDto>) {
+    Object.assign(this, params);
+  }
 }

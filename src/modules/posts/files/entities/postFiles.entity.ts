@@ -46,7 +46,6 @@ export class PostFilesModel {
 
   @Expose()
   get url(): string {
-    console.log(this.post);
     return `${process.env.BACKEND_URL}/posts/${this.postId}/files/file/${this.storedFilename}`;
   }
 

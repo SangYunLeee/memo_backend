@@ -15,6 +15,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AccessTokenGuard } from 'src/modules/auth/guard/bearer-token.guard';
 import { Response } from 'express';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
+import { User } from 'src/modules/users/decorator/user.decorator';
 
 @Controller('posts/:postId/files')
 export class PostFilesController {
@@ -39,9 +40,10 @@ export class PostFilesController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(
     @Param('postId') postId: string,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() file: Express.Multer.File,
+    @User('id') userId: number,
   ) {
-    return await this.postFilesService.createPostFile(+postId, file);
+    return await this.postFilesService.createPostFile(+postId, file, userId);
   }
 
   @Delete(':fileId')

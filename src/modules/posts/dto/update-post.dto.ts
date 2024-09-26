@@ -1,9 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreatePostDto } from './create-post.dto';
-import { IsNumber, IsOptional } from 'class-validator';
+import { UpdatePostDtoModel } from './update-post.dtoModel';
 
-export class UpdatePostDto extends PartialType(CreatePostDto) {
-  @IsOptional()
-  @IsNumber()
-  statusId: number = 2;
+export class UpdatePostDto extends UpdatePostDtoModel {
+  assign(params: Partial<UpdatePostDto>): void {
+    Object.assign(this, params);
+  }
 }
