@@ -40,11 +40,9 @@ export class PostPaginationConverter<
       }
     >
   > {
-    return PostPaginationConverter.postMappings as never as Partial<
-      Record<
-        keyof PaginatePostDto,
-        { where?: [keyof PostsModel, string][]; order?: [keyof PostsModel][] }
-      >
-    >;
+    return {
+      ...super.getMappings(),
+      ...PostPaginationConverter.postMappings,
+    };
   }
 }

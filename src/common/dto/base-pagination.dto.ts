@@ -17,7 +17,7 @@ export abstract class BasePaginationDto {
 
   @IsIn(['ASC', 'DESC'])
   @IsOptional()
-  order?: 'ASC' | 'DESC' = 'ASC';
+  order?: 'ASC' | 'DESC' = 'DESC';
 
   @IsNumber()
   @IsOptional()
