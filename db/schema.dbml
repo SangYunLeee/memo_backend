@@ -17,9 +17,18 @@ table posts as p {
   content_slate varchar(6000)
   cate_id integer [ref: > cate.id]
   created_at timestamp [not null, default: `now()`]
-  status_id integer [ref: > post_statuses.id, default: 1, note:'1: 임시글, 2: 공개글, 3: 미등록']
-  visibility_id integer [ref: > visibility_levels.id, default: 1]
+  status_id integer [ref: > post_statuses.id, default: 1, note:'1: 임시글, 2: 등록글, 3: 미등록']
+  visibility_id integer [ref: > visibility_levels.id, default: 1, note:'1: 비밀글, 2: 비공개글']
 }
+
+table temp_posts as tp {
+  id integer [pk, increment]
+  post_id integer [not null]
+  title varchar(300) [not null]
+  content_slate varchar(6000)
+}
+
+Ref: temp_posts.post_id - posts.id [delete: cascade]
 
 table categories as cate {
   id integer [pk, increment]
@@ -84,6 +93,7 @@ Table post_files {
   file_path varchar(1000) [not null]
   pending_deletion boolean [not null, default: false]
 }
+
 
 Ref: post_images.post_id > posts.id [delete: set null]
 Ref: post_files.post_id > posts.id [delete: set null]
