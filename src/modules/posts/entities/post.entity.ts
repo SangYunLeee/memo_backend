@@ -9,6 +9,11 @@ import { UserImagesModel } from 'src/modules/users/images/entity/usersImages.ent
 import { PostFilesModel } from '../files/entities/postFiles.entity';
 import { Exclude } from 'class-transformer';
 
+export enum PostVisibility {
+  PUBLIC = 1,
+  PRIVATE = 2,
+}
+
 @Entity('posts')
 export class PostsModel extends BaseModel {
   @ManyToOne(() => UsersModel, (user) => user.posts, {
@@ -43,7 +48,7 @@ export class PostsModel extends BaseModel {
   // 1: public, 2: private
   @Column({
     name: 'visibility_id',
-    default: 1,
+    default: PostVisibility.PUBLIC,
   })
   @IsNumber()
   visibilityId: number;

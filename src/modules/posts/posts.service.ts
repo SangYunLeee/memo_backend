@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { QueryRunner, Repository } from 'typeorm';
-import { PostsModel } from './entities/post.entity';
+import { PostsModel, PostVisibility } from './entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -42,14 +42,19 @@ export class PostsService {
         'authorImage.is_profile_image = :isProfileImage',
         { isProfileImage: true },
       );
+    // 비공개 게시글은 작성자만 볼 수 있음
     if (userId) {
       queryBuilder.andWhere(
         '(post.visibilityId = :publicVisibility OR (post.visibilityId = :privateVisibility AND post.author.id = :userId))',
-        { publicVisibility: 1, privateVisibility: 2, userId },
+        {
+          publicVisibility: PostVisibility.PUBLIC,
+          privateVisibility: PostVisibility.PRIVATE,
+          userId,
+        },
       );
     } else {
       queryBuilder.andWhere('post.visibilityId = :publicVisibility', {
-        publicVisibility: 1,
+        publicVisibility: PostVisibility.PUBLIC,
       });
     }
 
