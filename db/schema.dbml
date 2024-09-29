@@ -24,8 +24,10 @@ table posts as p {
 
 table temp_posts as tp {
   id integer [pk, increment]
+  users_id integer [ref: > u.id, not null]
   post_id integer [not null]
   title varchar(300) [not null]
+  content varchar(6000) [not null]
   content_slate varchar(6000)
   created_at timestamp [not null, default: `now()`]
   updated_at timestamp [not null, default: `now()`]
