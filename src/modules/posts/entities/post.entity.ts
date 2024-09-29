@@ -7,6 +7,7 @@ import { PostImagesModel } from '../images/entities/postImages.entity';
 import { CategoryModel } from 'src/modules/categories/entities/category.entity';
 import { UserImagesModel } from 'src/modules/users/images/entity/usersImages.entity';
 import { PostFilesModel } from '../files/entities/postFiles.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('posts')
 export class PostsModel extends BaseModel {
@@ -46,6 +47,25 @@ export class PostsModel extends BaseModel {
   })
   @IsNumber()
   visibilityId: number;
+
+  @Column({
+    name: 'cate_id',
+  })
+  @IsNumber()
+  categoryId: number;
+
+  @Column({
+    name: 'status_id',
+  })
+  @IsNumber()
+  statusId: number;
+
+  @Exclude()
+  @Column({
+    name: 'users_id',
+  })
+  @IsNumber()
+  authorId: number;
 
   // RelationShip
   @OneToMany((type) => PostImagesModel, (postImage) => postImage.post)

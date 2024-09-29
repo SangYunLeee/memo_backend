@@ -39,7 +39,7 @@ export class CategoriesController {
 
   @Get('me')
   findMine(@User('id') userId: number) {
-    return this.categoriesService.findAll({ userId });
+    return this.categoriesService.findAll({ authorId: userId });
   }
 
   @Patch('reorder')

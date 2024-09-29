@@ -19,9 +19,10 @@ export class CategoriesService {
     });
   }
 
-  async findAll({ userId, ids }: { userId?: number; ids?: number[] } = {}) {
+  async findAll({ authorId, ids }: { authorId?: number; ids?: number[] } = {}) {
+    console.log('authorId: ', authorId);
     return await this.categoriesRepository.find({
-      where: { user: { id: userId }, id: ids ? In(ids) : undefined },
+      where: { user: { id: authorId }, id: ids ? In(ids) : undefined },
       select: {
         id: true,
         pos: true,

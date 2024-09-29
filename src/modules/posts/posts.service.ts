@@ -8,6 +8,7 @@ import { PaginatePostDto } from './dto/paginte-post.dto';
 import { CommonService } from 'src/common/common.service';
 import { omitBy, isNil } from 'lodash';
 import { UsersService } from '../users/users.service';
+import { SearchCondition } from 'src/common/dto/base-pagination.type';
 
 @Injectable()
 export class PostsService {
@@ -93,9 +94,9 @@ export class PostsService {
     const repo = this.getPostRepository(qr);
     const post = repo.create({
       ...postDto,
-      author: { id: postDto.userId },
-      status: { id: postDto.statusId },
-      category: { id: postDto.categoryId },
+      authorId: postDto.userId,
+      statusId: postDto.statusId,
+      categoryId: postDto.categoryId,
     });
     const createdPost = await repo.save(post);
     const newPost = await this.getPostById(createdPost.id, postDto.userId, qr);
@@ -135,8 +136,8 @@ export class PostsService {
     const { nickname, userId } = dto;
     if (nickname) {
       const user = await this.usersService.getUserByNickname(nickname);
-      dto.assign({
-        where__and__author__id__equal: user?.id,
+      dto.assign<PaginatePostDto>({
+        author_id: user?.id,
         stopFlag: !user,
       });
     }
@@ -149,7 +150,7 @@ export class PostsService {
     const posts = await this.commonService.paginate(
       dto,
       this.postsRepository,
-      {},
+      new SearchCondition({}),
       'posts',
       queryBuilder, // queryBuilder를 추가로 전달
     );
