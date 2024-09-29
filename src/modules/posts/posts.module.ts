@@ -11,16 +11,19 @@ import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { CategoriesModule } from '../categories/categories.module';
 import { PostFilesModule } from './files/postFiles.module';
+import { TempPostsModel } from './tempPosts/entities/tempPost.entity';
+import { TempPostsModule } from './tempPosts/tempPosts.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PostsModel]),
+    TypeOrmModule.forFeature([PostsModel, TempPostsModel]),
     CommonModule,
     ImagesModule,
     PostFilesModule,
     AuthModule,
     UsersModule,
     CategoriesModule,
+    TempPostsModule,
   ],
   exports: [PostsService],
   controllers: [PostsController],

@@ -41,6 +41,12 @@ export class PostsService {
         'authorImage',
         'authorImage.is_profile_image = :isProfileImage',
         { isProfileImage: true },
+      )
+      .leftJoinAndSelect(
+        'post.tempPost',
+        'tempPost',
+        'tempPost.authorId = :userId',
+        { userId },
       );
     // 비공개 게시글은 작성자만 볼 수 있음
     if (userId) {
@@ -78,7 +84,7 @@ export class PostsService {
   ): Promise<PostsModel> {
     const repo = this.getPostRepository(qr);
     const post = await this.createBaseQueryBuilder(repo, userId)
-      .where('post.id = :id', { id })
+      .andWhere('post.id = :id', { id })
       .getOne();
 
     if (!post) {

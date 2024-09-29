@@ -26,6 +26,13 @@ export class LogInterceptor implements NestInterceptor {
   `);
     return next.handle().pipe(
       catchError(async (e: HttpException) => {
+        if (
+          e instanceof HttpException &&
+          e.getStatus() >= 400 &&
+          e.getStatus() < 500
+        ) {
+          throw e;
+        }
         console.error(`[ERR] ${myUUID} ${req.originalUrl}`);
         console.error(`stack: \n ${e.stack}`);
         console.log(

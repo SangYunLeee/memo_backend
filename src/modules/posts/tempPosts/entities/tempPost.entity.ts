@@ -6,8 +6,10 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   UpdateDateColumn,
 } from 'typeorm';
+import { PostsModel } from '../../entities/post.entity';
 
 @Entity('temp_posts')
 export class TempPostsModel extends BaseModel {
@@ -16,6 +18,13 @@ export class TempPostsModel extends BaseModel {
   })
   @JoinColumn({ name: 'users_id' })
   author: UsersModel;
+
+  @Column({
+    name: 'users_id',
+    nullable: false,
+  })
+  @IsNumber()
+  authorId: number;
 
   @IsOptional()
   @Column({
@@ -42,4 +51,15 @@ export class TempPostsModel extends BaseModel {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @JoinColumn({ name: 'post_id' })
+  @OneToOne(() => PostsModel, (post) => post.tempPost)
+  post: PostsModel;
+
+  @Column({
+    name: 'post_id',
+    nullable: false,
+  })
+  @IsNumber()
+  postId: number;
 }
