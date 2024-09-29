@@ -1,7 +1,7 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, UpdateDateColumn } from 'typeorm';
 import { PostStatusModel } from './post-status.entity';
 import { PostImagesModel } from '../images/entities/postImages.entity';
 import { CategoryModel } from 'src/modules/categories/entities/category.entity';
@@ -64,6 +64,9 @@ export class PostsModel extends BaseModel {
   })
   @IsNumber()
   statusId: number;
+
+  @UpdateDateColumn({ name: 'updated_at' })
+  updatedAt: Date;
 
   @Exclude()
   @Column({
