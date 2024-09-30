@@ -139,7 +139,7 @@ export class PostsService {
       category: postDto.categoryId && { id: postDto.categoryId },
     });
 
-    const updatedPost = await this.getPostById(newPost.id);
+    const updatedPost = await this.getPostById(newPost.id, postDto.userId);
     return this.mapPostUserImage(updatedPost);
   }
 
