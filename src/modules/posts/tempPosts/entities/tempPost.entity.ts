@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { PostsModel } from '../../entities/post.entity';
+import { Transform } from 'class-transformer';
 
 @Entity('temp_posts')
 export class TempPostsModel extends BaseModel {
@@ -45,6 +46,14 @@ export class TempPostsModel extends BaseModel {
   @Column({
     length: 6000,
     name: 'content_slate',
+  })
+  @Transform(({ value }) => {
+    try {
+      return JSON.parse(value);
+    } catch (error) {
+      console.error('contentSlate 파싱 실패:', error);
+      return value;
+    }
   })
   @IsString()
   contentSlate: string = '';

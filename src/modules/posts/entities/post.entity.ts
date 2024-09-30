@@ -1,13 +1,21 @@
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  OneToOne,
+  UpdateDateColumn,
+} from 'typeorm';
 import { PostStatusModel } from './post-status.entity';
 import { PostImagesModel } from '../images/entities/postImages.entity';
 import { CategoryModel } from 'src/modules/categories/entities/category.entity';
 import { UserImagesModel } from 'src/modules/users/images/entity/usersImages.entity';
 import { PostFilesModel } from '../files/entities/postFiles.entity';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 import { TempPostsModel } from '../tempPosts/entities/tempPost.entity';
 
 export enum PostVisibility {
@@ -43,6 +51,17 @@ export class PostsModel extends BaseModel {
     length: 6000,
     name: 'content_slate',
   })
+  @Transform(
+    ({ value }) => {
+      try {
+        return JSON.parse(value);
+      } catch (error) {
+        console.error('contentSlate 파싱 실패:', error);
+        return value;
+      }
+    },
+    { toPlainOnly: true },
+  )
   @IsString()
   contentSlate: string = '';
 
