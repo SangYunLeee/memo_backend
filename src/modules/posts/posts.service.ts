@@ -9,12 +9,14 @@ import { CommonService } from 'src/common/common.service';
 import { omitBy, isNil } from 'lodash';
 import { UsersService } from '../users/users.service';
 import { SearchCondition } from 'src/common/dto/base-pagination.type';
+import { TempPostsService } from './tempPosts/tempPosts.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(PostsModel)
     private readonly postsRepository: Repository<PostsModel>,
+    private readonly tempPostsService: TempPostsService,
     private readonly commonService: CommonService,
     private readonly usersService: UsersService,
   ) {}
@@ -120,10 +122,6 @@ export class PostsService {
   }
 
   async updatePost(postId: number, postDto: UpdatePostDto) {
-    // save의 기능
-    // 1) 만약에 데이터가 존재하지 않는다면 (id 기준으로) 새로 생성한다.
-    // 2) 만약에 데이터가 존재한다면 (같은 id의 값이 존재한다면) 존재하던 값을 업데이트한다.
-
     const post = await this.getPostById(postId, postDto.userId);
 
     if (!post) {
@@ -140,6 +138,9 @@ export class PostsService {
     });
 
     const updatedPost = await this.getPostById(newPost.id, postDto.userId);
+    if (post.tempPost) {
+      await this.tempPostsService.deleteTempPost(postDto.userId, postId);
+    }
     return this.mapPostUserImage(updatedPost);
   }
 
