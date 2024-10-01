@@ -69,12 +69,6 @@ export class PostsService {
     return queryBuilder;
   }
 
-  private mapPostUserImage(post: PostsModel): PostsModel {
-    post.author.profileImage = post?.userImage || null;
-    delete post.userImage;
-    return post;
-  }
-
   getPostRepository(qr?: QueryRunner) {
     return qr ? qr.manager.getRepository(PostsModel) : this.postsRepository;
   }
@@ -113,7 +107,7 @@ export class PostsService {
     });
     const createdPost = await repo.save(post);
     const newPost = await this.getPostById(createdPost.id, postDto.userId, qr);
-    return this.mapPostUserImage(newPost);
+    return newPost;
   }
 
   async deletePostById(id: number, userId: number): Promise<void> {
@@ -131,7 +125,7 @@ export class PostsService {
     const filteredDto = omitBy(postDto, isNil);
 
     const newPost = await this.postsRepository.save({
-      ...post,
+      id: post.id,
       ...filteredDto,
       status: postDto.statusId && { id: postDto.statusId },
       category: postDto.categoryId && { id: postDto.categoryId },
@@ -141,7 +135,7 @@ export class PostsService {
     if (post.tempPost) {
       await this.tempPostsService.deleteTempPost(postDto.userId, postId);
     }
-    return this.mapPostUserImage(updatedPost);
+    return updatedPost;
   }
 
   async paginatePosts(dto: PaginatePostDto) {
@@ -197,7 +191,7 @@ export class PostsService {
     }
   }
 
-  async isPostMine(postId: number, userId: number) {
+  async isPostExist(postId: number, userId: number) {
     const exist = await this.postsRepository.exists({
       where: {
         id: postId,

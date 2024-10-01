@@ -17,6 +17,7 @@ import { User } from '../users/decorator/user.decorator';
 import { PaginateCategoryDto } from './dto/paginte-category.dto';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { ReorderCategoryDto } from './dto/reorder-category.dto';
+import { CategoryIsMine } from './guard/is-category-mine-or-admin.guard';
 
 @Controller('categories')
 export class CategoriesController {
@@ -48,6 +49,7 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @UseGuards(CategoryIsMine)
   update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -56,9 +58,8 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @UseGuards(CategoryIsMine)
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
   }
-
-
 }

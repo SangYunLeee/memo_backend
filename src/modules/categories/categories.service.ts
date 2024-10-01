@@ -20,7 +20,6 @@ export class CategoriesService {
   }
 
   async findAll({ authorId, ids }: { authorId?: number; ids?: number[] } = {}) {
-    console.log('authorId: ', authorId);
     return await this.categoriesRepository.find({
       where: { user: { id: authorId }, id: ids ? In(ids) : undefined },
       select: {
@@ -38,9 +37,9 @@ export class CategoriesService {
     return this.categoriesRepository.findOne({ where: { id } });
   }
 
-  async exists(id: number) {
+  async exists(id: number, userId?: number) {
     return await this.categoriesRepository
-      .count({ where: { id } })
+      .count({ where: { id, user: { id: userId } } })
       .then((count) => count > 0);
   }
 

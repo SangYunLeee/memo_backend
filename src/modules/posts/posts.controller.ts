@@ -16,13 +16,13 @@ import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { User } from '../users/decorator/user.decorator';
 import { PaginatePostDto } from './dto/paginte-post.dto';
 import { IsPostMineOrAdminGuard } from './guard/is-post-mine-or-admin.guard';
-import { CategoryCheck } from '../categories/guard/is-post-mine-or-admin.guard';
+import { CategoryIsMine } from './guard/is-category-mine-or-admin.guard';
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  @UseGuards(CategoryCheck)
+  @UseGuards(CategoryIsMine)
   async createPost(@Body() postDto: CreatePostDto, @User('id') userId: number) {
     postDto.assign({ userId });
     const post = await this.postsService.createPost(postDto);
@@ -49,7 +49,7 @@ export class PostsController {
 
   @Patch(':postId')
   @UseGuards(IsPostMineOrAdminGuard)
-  @UseGuards(CategoryCheck)
+  @UseGuards(CategoryIsMine)
   async updatePost(
     @Param('postId') postId: string,
     @Body() updatePostDto: UpdatePostDto,

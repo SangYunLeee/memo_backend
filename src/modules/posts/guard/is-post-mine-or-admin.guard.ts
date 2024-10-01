@@ -21,7 +21,7 @@ export class IsPostMineOrAdminGuard implements CanActivate {
     }
     const { postId } = req.params;
 
-    const isOk = await this.postsService.isPostMine(Number(postId), user.id);
+    const isOk = await this.postsService.isPostExist(Number(postId), user.id);
     if (!isOk) {
       throw new UnauthorizedException('권한이 없습니다.');
     }

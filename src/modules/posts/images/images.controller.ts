@@ -14,7 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { AccessTokenGuard } from 'src/modules/auth/guard/bearer-token.guard';
 import { Response } from 'express';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
-import { User } from 'src/modules/users/decorator/user.decorator';
+import { IsPostMineOrAdminGuard } from '../guard/is-post-mine-or-admin.guard';
 
 @Controller('posts/:postId/images')
 export class ImagesController {
@@ -31,19 +31,18 @@ export class ImagesController {
   }
 
   @Post()
-  @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard, IsPostMineOrAdminGuard)
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(
     @Param('postId') postId: string,
     @UploadedFile() image: Express.Multer.File,
     @Body('isThumbnail') isThumbnail: boolean = false,
-    @User('id') userId: number,
   ) {
-    return await this.imagesService.createPostImage(
+    const postImage = await this.imagesService.createPostImage(
       +postId,
       isThumbnail,
       image,
-      userId,
     );
+    return { postImage };
   }
 }

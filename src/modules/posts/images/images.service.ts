@@ -2,15 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostImagesModel } from './entities/postImages.entity';
 import { Repository } from 'typeorm';
-import { PostsService } from '../posts.service';
-import fs, { promises, mkdirSync, existsSync } from 'fs';
+import { promises, mkdirSync, existsSync } from 'fs';
 import { generateHashedPath } from '../../../common/utils/upload/multer-options';
+import { assignAndTransform } from 'src/common/utils/object-formatter';
 @Injectable()
 export class ImagesService {
   constructor(
     @InjectRepository(PostImagesModel)
     private readonly imagesRepository: Repository<PostImagesModel>,
-    private readonly postsService: PostsService,
   ) {}
 
   async getImageFile(filename: string) {
@@ -26,15 +25,10 @@ export class ImagesService {
     postId: number,
     isThumbnail: boolean,
     image: Express.Multer.File,
-    userId: number,
   ) {
-    const post = await this.postsService.getPostById(postId, userId);
-    if (!post) {
-      throw new Error('Post not found');
-    }
     // postImages에 들어갈 이미지 경로 변수 수정
     const imagePath = generateHashedPath(image.filename, 'postImage');
-    const postImage = await this.imagesRepository.save({
+    const fetchedPostImage = await this.imagesRepository.save({
       post: { id: postId },
       isThumbnail,
       originalFilename: image.originalname,
@@ -48,11 +42,7 @@ export class ImagesService {
       `${image.destination}/${image.filename}`,
       `${imagePath}/${image.filename}`,
     );
-    return {
-      postImage: {
-        id: postImage.id,
-        url: `${process.env.BACKEND_URL}/posts/${post.id}/images/file/${image.filename}`,
-      },
-    };
+    const postImage = assignAndTransform(PostImagesModel, fetchedPostImage);
+    return postImage;
   }
 }

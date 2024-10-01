@@ -15,11 +15,13 @@ import { TempPostsService } from './tempPosts.service';
 import { User } from 'src/modules/users/decorator/user.decorator';
 import { CreateTempPostDto } from './dto/create-tempPost.dto';
 import { UpdateTempPostDto } from './dto/update-tempPost.dto';
+import { IsPostMineOrAdminGuard } from '../guard/is-post-mine-or-admin.guard';
 @Controller('posts')
 export class TempPostsController {
   constructor(private readonly tempPostsService: TempPostsService) {}
 
   @Get(':postId/temp')
+  @UseGuards(IsPostMineOrAdminGuard)
   findOne(
     @User('id') userId: number,
     @Param('postId', ParseIntPipe) postId: number,
@@ -28,6 +30,7 @@ export class TempPostsController {
   }
 
   @Put(':postId/temp')
+  @UseGuards(IsPostMineOrAdminGuard)
   update(
     @User('id') userId: number,
     @Param('postId', ParseIntPipe) postId: number,
@@ -41,6 +44,7 @@ export class TempPostsController {
   }
 
   @Delete(':postId/temp')
+  @UseGuards(IsPostMineOrAdminGuard)
   remove(
     @User('id') userId: number,
     @Param('postId', ParseIntPipe) postId: number,
