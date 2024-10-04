@@ -27,6 +27,7 @@ export class CategoriesService {
         pos: true,
         categoryName: true,
         user: { id: true },
+        postCount: true,
       },
       relations: ['user'],
       order: { pos: 'ASC' },
