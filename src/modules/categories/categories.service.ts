@@ -3,7 +3,7 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryModel } from './entities/category.entity';
-import { In, Repository } from 'typeorm';
+import { In, QueryRunner, Repository } from 'typeorm';
 import { ReorderCategoryDto } from './dto/reorder-category.dto';
 
 @Injectable()
@@ -19,6 +19,20 @@ export class CategoriesService {
     });
   }
 
+  getCategoryRepository(qr?: QueryRunner) {
+    return qr
+      ? qr.manager.getRepository(CategoryModel)
+      : this.categoriesRepository;
+  }
+
+  async updateCategoryPostCount(
+    categoryId: number,
+    userId: number,
+    qr?: QueryRunner,
+  ) {
+
+  }
+
   async findAll({ authorId, ids }: { authorId?: number; ids?: number[] } = {}) {
     return await this.categoriesRepository.find({
       where: { user: { id: authorId }, id: ids ? In(ids) : undefined },
@@ -27,6 +41,7 @@ export class CategoriesService {
         pos: true,
         categoryName: true,
         user: { id: true },
+        postCount: true,
       },
       relations: ['user'],
       order: { pos: 'ASC' },

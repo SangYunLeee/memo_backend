@@ -23,6 +23,12 @@ export enum PostVisibility {
   PRIVATE = 2,
 }
 
+export enum PostStatus {
+  DRAFT = 1,
+  PUBLISHED = 2,
+  UNREGISTERED = 3,
+}
+
 @Entity('posts')
 export class PostsModel extends BaseModel {
   @ManyToOne(() => UsersModel, (user) => user.posts, {

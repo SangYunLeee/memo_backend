@@ -37,6 +37,20 @@ export class CategoryModel {
   @IsString()
   categoryName: string;
 
+  @Column({
+    default: 0,
+    name: 'post_count',
+  })
+  @IsNumber()
+  postCount: number;
+
+  @Column({
+    default: 0,
+    name: 'temp_post_count',
+  })
+  @IsNumber()
+  tempPostCount: number;
+
   @OneToMany(() => PostsModel, (post) => post.category)
   posts: PostsModel[];
 }

@@ -10,6 +10,7 @@ import { omitBy, isNil } from 'lodash';
 import { UsersService } from '../users/users.service';
 import { SearchCondition } from 'src/common/dto/base-pagination.type';
 import { TempPostsService } from './tempPosts/tempPosts.service';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class PostsService {
@@ -19,6 +20,7 @@ export class PostsService {
     private readonly tempPostsService: TempPostsService,
     private readonly commonService: CommonService,
     private readonly usersService: UsersService,
+    private readonly categoriesService: CategoriesService,
   ) {}
 
   private createBaseQueryBuilder(
@@ -108,6 +110,26 @@ export class PostsService {
     const createdPost = await repo.save(post);
     const newPost = await this.getPostById(createdPost.id, postDto.userId, qr);
     return newPost;
+  }
+
+  async countPost({
+    categoryId,
+    userId,
+    statusId,
+    qr,
+  }: {
+    categoryId: number;
+    userId: number;
+    statusId: number;
+    qr?: QueryRunner;
+  }) {
+    const repo = this.getPostRepository(qr);
+    return await repo.count({
+      where: {
+        category: { id: categoryId, user: { id: userId } },
+        status: { id: statusId },
+      },
+    });
   }
 
   async deletePostById(id: number, userId: number): Promise<void> {
