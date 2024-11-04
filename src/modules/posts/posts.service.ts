@@ -109,6 +109,7 @@ export class PostsService {
     });
     const createdPost = await repo.save(post);
     const newPost = await this.getPostById(createdPost.id, postDto.userId, qr);
+    await this.updateCategoryPostCount(newPost);
     return newPost;
   }
 
@@ -132,9 +133,20 @@ export class PostsService {
     });
   }
 
+  async updateCategoryPostCount(post: PostsModel, qr?: QueryRunner) {
+    if (post.category == undefined) {
+      return;
+    }
+    await this.categoriesService.updateCategoryPostCount(
+      post.category.id,
+      post.author.id,
+    );
+  }
+
   async deletePostById(id: number, userId: number): Promise<void> {
     const post = await this.getPostById(id, userId);
     await this.postsRepository.remove(post);
+    await this.updateCategoryPostCount(post);
   }
 
   async updatePost(postId: number, postDto: UpdatePostDto) {
@@ -157,6 +169,8 @@ export class PostsService {
     if (post.tempPost) {
       await this.tempPostsService.deleteTempPost(postDto.userId, postId);
     }
+    await this.updateCategoryPostCount(post);
+    await this.updateCategoryPostCount(updatedPost);
     return updatedPost;
   }
 

@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryModel } from './entities/category.entity';
 import { In, QueryRunner, Repository } from 'typeorm';
 import { ReorderCategoryDto } from './dto/reorder-category.dto';
+import { PostStatus } from '../posts/entities/post.entity';
 
 @Injectable()
 export class CategoriesService {
@@ -30,7 +31,44 @@ export class CategoriesService {
     userId: number,
     qr?: QueryRunner,
   ) {
+    if (categoryId == undefined) {
+      throw new Error('Category ID is undefined');
+    }
+    const repo = this.getCategoryRepository(qr);
 
+    // 임시글(status_id = 1)과 등록글(status_id = 2) 개수를 각각 계산
+    const [tempCount, publishedCount] = await Promise.all([
+      repo
+        .createQueryBuilder('category')
+        .select('COUNT(*)', 'count')
+        .innerJoin('posts', 'post', 'post.cate_id = category.id')
+        .where('category.id = :categoryId', { categoryId })
+        .andWhere('post.status_id = :statusId', { statusId: PostStatus.DRAFT })
+        .getRawOne()
+        .then((result) => result?.count || 0),
+
+      repo
+        .createQueryBuilder('category')
+        .select('COUNT(*)', 'count')
+        .innerJoin('posts', 'post', 'post.cate_id = category.id')
+        .where('category.id = :categoryId', { categoryId })
+        .andWhere('post.status_id = :statusId', {
+          statusId: PostStatus.PUBLISHED,
+        })
+        .getRawOne()
+        .then((result) => result?.count || 0),
+    ]);
+
+    console.log('tempCount: ', tempCount);
+    console.log('publishedCount: ', publishedCount);
+    // 카테고리 업데이트
+    await repo.update(
+      { id: categoryId, user: { id: userId } },
+      {
+        postCount: publishedCount,
+        tempPostCount: tempCount,
+      },
+    );
   }
 
   async findAll({ authorId, ids }: { authorId?: number; ids?: number[] } = {}) {
@@ -42,6 +80,7 @@ export class CategoriesService {
         categoryName: true,
         user: { id: true },
         postCount: true,
+        tempPostCount: true,
       },
       relations: ['user'],
       order: { pos: 'ASC' },

@@ -25,5 +25,5 @@ SET temp_post_count = (
 );
 
 -- migrate:down
-ALTER TABLE categories DROP COLUMN post_count;
-ALTER TABLE categories DROP COLUMN temp_post_count;
+ALTER TABLE categories DROP COLUMN IF EXISTS post_count;
+ALTER TABLE categories DROP COLUMN IF EXISTS temp_post_count;
