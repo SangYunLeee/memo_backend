@@ -35,6 +35,10 @@ export class PaginatePostDto extends BasePaginationDto {
   @IsOptional()
   category_id: number;
 
+  @IsNumber()
+  @IsOptional()
+  take?: number = 12;
+
   getConverter<
     T extends BasePaginationDto,
     MODEL extends BaseModel,
