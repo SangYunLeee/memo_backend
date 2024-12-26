@@ -1,0 +1,11 @@
+*Dockerfile
+node_modules/
+.github/
+build/
+db/
+postgres-data/
+frontend/
+test/
+typescript-test/
+*.log
+.*env*
