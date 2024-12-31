@@ -17,6 +17,7 @@ import { UserImagesModel } from 'src/modules/users/images/entity/usersImages.ent
 import { PostFilesModel } from '../files/entities/postFiles.entity';
 import { Exclude, Transform } from 'class-transformer';
 import { TempPostsModel } from '../tempPosts/entities/tempPost.entity';
+import { CommentsModel } from '../comments/entities/comments.entity';
 
 export enum PostVisibility {
   PUBLIC = 1,
@@ -124,4 +125,7 @@ export class PostsModel extends BaseModel {
 
   @OneToOne(() => TempPostsModel, (tempPost) => tempPost.post)
   tempPost: TempPostsModel;
+
+  @OneToMany(() => CommentsModel, (comment) => comment.post)
+  comments: CommentsModel[];
 }

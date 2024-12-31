@@ -51,7 +51,13 @@ export class PostsService {
         'tempPost',
         'tempPost.authorId = :userId',
         { userId },
-      );
+      )
+      .leftJoinAndSelect(
+        'post.comments',
+        'comments',
+        'comments.postsId = post.id',
+      )
+      .leftJoinAndSelect('comments.user', 'commentAuthor');
     // 비공개 게시글은 작성자만 볼 수 있음
     if (userId) {
       queryBuilder.andWhere(

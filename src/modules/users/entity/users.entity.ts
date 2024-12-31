@@ -7,6 +7,7 @@ import { PostsModel } from 'src/modules/posts/entities/post.entity';
 import { PostImagesModel } from 'src/modules/posts/images/entities/postImages.entity';
 import { UserImagesModel } from '../images/entity/usersImages.entity';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
+import { CommentsModel } from 'src/modules/posts/comments/entities/comments.entity';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
@@ -51,6 +52,9 @@ export class UsersModel extends BaseModel {
   @Expose()
   @OneToOne(() => UserImagesModel, (image) => image.user)
   profileImage?: UserImagesModel;
+
+  @OneToMany(() => CommentsModel, (comment) => comment.user)
+  comments: CommentsModel[];
 
   updateProfileInfo(updateDto: UpdateProfileDto) {
     if (updateDto.nickname) {

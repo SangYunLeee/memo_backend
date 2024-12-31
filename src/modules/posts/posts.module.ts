@@ -13,10 +13,12 @@ import { CategoriesModule } from '../categories/categories.module';
 import { PostFilesModule } from './files/postFiles.module';
 import { TempPostsModel } from './tempPosts/entities/tempPost.entity';
 import { TempPostsModule } from './tempPosts/tempPosts.module';
+import { CommentsModule } from './comments/comments.module';
+import { CommentsModel } from './comments/entities/comments.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PostsModel, TempPostsModel]),
+    TypeOrmModule.forFeature([PostsModel, TempPostsModel, CommentsModel]),
     CommonModule,
     ImagesModule,
     PostFilesModule,
@@ -24,6 +26,7 @@ import { TempPostsModule } from './tempPosts/tempPosts.module';
     UsersModule,
     CategoriesModule,
     TempPostsModule,
+    CommentsModule,
   ],
   exports: [PostsService],
   controllers: [PostsController],
