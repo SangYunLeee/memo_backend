@@ -57,7 +57,13 @@ export class PostsService {
         'comments',
         'comments.postsId = post.id',
       )
-      .leftJoinAndSelect('comments.user', 'commentAuthor');
+      .leftJoinAndSelect('comments.user', 'commentAuthor')
+      .leftJoinAndSelect(
+        'commentAuthor.profileImage',
+        'commentAuthorProfileImage',
+        'commentAuthorProfileImage.is_profile_image = :isProfileImage',
+        { isProfileImage: true },
+      );
     // 비공개 게시글은 작성자만 볼 수 있음
     if (userId) {
       queryBuilder.andWhere(

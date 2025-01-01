@@ -53,4 +53,11 @@ export class CommentsService {
 
     return updatedComment;
   }
+
+  async getComments(postId: number) {
+    return await this.commentsRepository.find({
+      where: { postsId: postId },
+      relations: ['user'],
+    });
+  }
 }
