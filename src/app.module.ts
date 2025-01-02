@@ -8,6 +8,7 @@ import { PostsModule } from './modules/posts/posts.module';
 import { LogInterceptor } from './common/interceptor/log.interceptor';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { UsersModule } from './modules/users/users.module';
+import { GoogleStrategy } from './modules/auth/strategy/google.strategy';
 @Module({
   imports: [
     CommonModule,
@@ -19,6 +20,7 @@ import { UsersModule } from './modules/users/users.module';
   controllers: [AppController],
   providers: [
     AppService,
+    GoogleStrategy,
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,

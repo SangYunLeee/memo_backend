@@ -5,9 +5,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/modules/users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './guard/bearer-token.guard';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [JwtModule.register({}), UsersModule],
+  imports: [JwtModule.register({}), UsersModule, PassportModule],
   exports: [AuthService],
   controllers: [AuthController],
   providers: [

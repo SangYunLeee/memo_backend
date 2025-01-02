@@ -129,4 +129,23 @@ export class AuthService {
       isRefreshToken,
     );
   }
+
+  async validateUser(details: any) {
+    const user = await this.usersService.getUserByEmail(details.email);
+    if (user) return user;
+    return {
+      user: 'hellow',
+    };
+  }
+
+  async googleLogin(req) {
+    if (!req.user) {
+      return '인증 실패';
+    }
+    return {
+      message: '인증 성공',
+      user: req.user,
+    };
+  }
+
 }
