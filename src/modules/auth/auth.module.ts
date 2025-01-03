@@ -6,13 +6,16 @@ import { UsersModule } from 'src/modules/users/users.module';
 import { APP_GUARD } from '@nestjs/core';
 import { AccessTokenGuard } from './guard/bearer-token.guard';
 import { PassportModule } from '@nestjs/passport';
+import { OAuthController } from './oauth/oauth.controller';
+import { GoogleOAuthService } from './oauth/oauth-google.service';
 
 @Module({
   imports: [JwtModule.register({}), UsersModule, PassportModule],
   exports: [AuthService],
-  controllers: [AuthController],
+  controllers: [AuthController, OAuthController],
   providers: [
     AuthService,
+    GoogleOAuthService,
     // {
     //   provide: APP_GUARD,
     //   useClass: AccessTokenGuard,

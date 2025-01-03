@@ -52,10 +52,9 @@ export class AuthController {
   @UseGuards(AuthGuard('google'))
   async googleAuth(@Req() req) {}
 
-  @Get('google/callback')
+  @Post('google/login')
   @IsPublic()
-  @UseGuards(AuthGuard('google'))
-  async googleAuthRedirect(@Req() req) {
-    return this.authService.googleLogin(req);
+  async googleLogin(@Body() body: { accessToken: string }) {
+    return this.authService.verifyGoogleToken(body.accessToken);
   }
 }

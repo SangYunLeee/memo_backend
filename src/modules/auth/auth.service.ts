@@ -4,6 +4,7 @@ import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { UsersService } from 'src/modules/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
@@ -49,6 +50,7 @@ export class AuthService {
   }
 
   async loginWithEmail(user: Pick<UsersModel, 'email' | 'password'>) {
+    console.log('user', user);
     const existingUser = await this.authenticateUserWithEmail(user);
     const token = this.loginToken(existingUser);
     return { user: existingUser, token };
@@ -148,4 +150,19 @@ export class AuthService {
     };
   }
 
+  async verifyGoogleToken(token: string) {
+    try {
+      // Google의 userinfo endpoint로 토큰 검증
+      const { data } = await axios.get(
+        'https://www.googleapis.com/oauth2/v3/userinfo',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      console.log('data', data);
+      return data;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+  }
 }
