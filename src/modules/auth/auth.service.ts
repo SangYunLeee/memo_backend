@@ -4,6 +4,7 @@ import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { UsersService } from 'src/modules/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { RegisterUserDto } from './dto/register-user.dto';
+import axios from 'axios';
 
 @Injectable()
 export class AuthService {
