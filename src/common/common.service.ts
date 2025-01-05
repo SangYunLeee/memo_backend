@@ -12,6 +12,7 @@ import {
   SearchCondition,
   WhereOrCondition,
 } from './dto/base-pagination.type';
+import { plainToInstance, ClassConstructor } from 'class-transformer';
 
 @Injectable()
 export class CommonService {
@@ -54,6 +55,7 @@ export class CommonService {
     try {
       const results = !dto.stopFlag ? await queryBuilder.getMany() : [];
 
+      // 마지막 아이템이 있다면 추가 nextUrl 생성
       const lastItem =
         results.length > 0 && results.length === dto.take
           ? results[results.length - 1]
@@ -62,23 +64,20 @@ export class CommonService {
       const nextUrl = lastItem && new URL(`${process.env.BACKEND_URL}/${path}`);
 
       if (lastItem) {
-        for (const key of Object.keys(dto)) {
-          if (dto[key]) {
-            if (key !== 'id_gt') {
-              nextUrl.searchParams.append(key, dto[key]);
-            }
-          }
-        }
+        const dtoInstance = plainToInstance(
+          dto.constructor as ClassConstructor<unknown>,
+          dto,
+        );
 
-        let key: keyof PaginationDto = null;
+        Object.entries(dtoInstance)
+          .filter(([key]) => !['id_gt', 'id_lt'].includes(key))
+          .forEach(([key, value]) => {
+            nextUrl.searchParams.append(key, dto[key]);
+          });
 
-        if (dto.order === 'ASC') {
-          key = 'id_gt';
-        } else {
-          key = 'id_lt';
-        }
-
-        nextUrl.searchParams.append(key, lastItem.id.toString());
+        const paginationKey: keyof PaginationDto =
+          dto.order === 'ASC' ? 'id_gt' : 'id_lt';
+        nextUrl.searchParams.append(paginationKey, lastItem.id.toString());
       }
 
       return {
@@ -137,7 +136,6 @@ export class CommonService {
     const queryBuilder =
       existingQueryBuilder || repository.createQueryBuilder('entity');
     const alias = queryBuilder.alias;
-
     this.applyWhereConditions(queryBuilder, modifiedOptions.whereList, alias);
     this.applyOrderConditions(queryBuilder, modifiedOptions.orderList, alias);
     this.applyTakeCondition(queryBuilder, dto.take);
