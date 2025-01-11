@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { BaseModel } from 'src/common/entity/base.entity';
 import { PostsModel } from 'src/modules/posts/entities/post.entity';
@@ -34,6 +35,12 @@ export class CategoryModel {
     nullable: false,
     name: 'category_name',
   })
+  @Transform(
+    ({ value }) => {
+      return value.trim();
+    },
+    { toClassOnly: true },
+  )
   @IsString()
   categoryName: string;
 
