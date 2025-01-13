@@ -109,4 +109,13 @@ export class UsersService {
     this.usersRepository.save(user);
     return this.getUsersWithProfileImage({ userIds: [userId] })[0];
   }
+
+  async updatePassword(userId: number, newPassword: string) {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('사용자를 찾을 수 없습니다.');
+    }
+    user.password = newPassword;
+    this.usersRepository.save(user);
+  }
 }

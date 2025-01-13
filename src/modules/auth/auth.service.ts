@@ -130,4 +130,13 @@ export class AuthService {
       isRefreshToken,
     );
   }
+
+  async updatePassword(userId: number, newPassword: string) {
+    const hash = await bcrypt.hash(
+      newPassword,
+      Number(process.env.HASH_ROUNDS),
+    );
+    await this.usersService.updatePassword(userId, hash);
+    return { message: '비밀번호가 변경되었습니다.' };
+  }
 }
