@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -19,7 +20,9 @@ import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { ReorderCategoryDto } from './dto/reorder-category.dto';
 import { CategoryIsMine } from './guard/is-category-mine-or-admin.guard';
 import { UpdateCategoryListDto } from './dto/update-category-list.dto';
-
+import { TransactionInterceptor } from 'src/common/interceptor/transaction.interceptor';
+import { QueryRunner as QR } from 'src/common/decorator/query-runner.decorator';
+import { QueryRunner } from 'typeorm';
 @Controller('categories')
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
@@ -49,6 +52,16 @@ export class CategoriesController {
     return this.categoriesService.reorderCategories(reorderDto);
   }
 
+  @Patch('list')
+  @UseInterceptors(TransactionInterceptor)
+  updateList(
+    @Body() updateCategoryListDto: UpdateCategoryListDto,
+    @QR() qr: QueryRunner,
+    @User('id') userId: number,
+  ) {
+    return this.categoriesService.updateList(updateCategoryListDto, qr, userId);
+  }
+
   @Patch(':id')
   @UseGuards(CategoryIsMine)
   update(
@@ -62,11 +75,5 @@ export class CategoriesController {
   @UseGuards(CategoryIsMine)
   remove(@Param('id') id: string) {
     return this.categoriesService.remove(+id);
-  }
-
-  @Patch('list')
-  updateList(@Body() updateCategoryListDto: UpdateCategoryListDto) {
-    console.log(updateCategoryListDto);
-    return 'ok';
   }
 }

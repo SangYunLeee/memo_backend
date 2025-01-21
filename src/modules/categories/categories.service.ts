@@ -6,6 +6,7 @@ import { CategoryModel } from './entities/category.entity';
 import { In, QueryRunner, Repository } from 'typeorm';
 import { ReorderCategoryDto } from './dto/reorder-category.dto';
 import { PostStatus } from '../posts/entities/post.entity';
+import { UpdateCategoryListDto } from './dto/update-category-list.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -81,8 +82,11 @@ export class CategoriesService {
         user: { id: true },
         postCount: true,
         tempPostCount: true,
+        parentId: true,
+        depth: true,
+        children: true,
       },
-      relations: ['user'],
+      relations: ['user', 'children'],
       order: { pos: 'ASC' },
     });
   }
@@ -110,6 +114,54 @@ export class CategoriesService {
 
   remove(id: number) {
     return this.categoriesRepository.delete(id);
+  }
+
+  async updateList(
+    updateCategoryListDto: UpdateCategoryListDto,
+    qr: QueryRunner,
+    userId: number,
+  ) {
+    const { categoryIdsToDelete, categoriesToAdd, categoriesToUpdate } =
+      updateCategoryListDto;
+
+    const listToCreate = categoriesToAdd.map((item) => ({
+      ...item,
+      user: { id: userId },
+    }));
+    const repo = this.getCategoryRepository(qr);
+
+    let deleted;
+    if (categoryIdsToDelete.length > 0) {
+      deleted = await repo.delete(categoryIdsToDelete);
+    } else {
+      deleted = { affected: 0 };
+    }
+
+    // 임시 ID와 실제 ID를 매핑할 객체
+    const idMapping: Record<number, number> = {};
+
+    // create category input [{id: -1}, {id: -2}, ...]
+    // output [{id: 1}, {id: 2}, ...]
+
+    const added = await repo.save(listToCreate);
+
+    // 임시 ID와 실제 ID 매핑
+    added.forEach((item, index) => {
+      idMapping[listToCreate[index].id] = item.id;
+    });
+    // convert category input [{id: 1, parentId: -1}, {id: 2, parentId: -1}, ...]
+    // output [{id: 1, parentId: 1}, {id: 2, parentId: 1}, ...]
+    console.log(idMapping);
+    const categoriesToUpdateWithRealId = categoriesToUpdate.map((item) => ({
+      ...item,
+      parentId: item.parentId
+        ? idMapping[item.parentId] || item.parentId
+        : item.parentId,
+    }));
+    console.log(categoriesToUpdateWithRealId);
+    const updated = await repo.save(categoriesToUpdateWithRealId);
+
+    return { deleted, added, updated };
   }
 
   async reorderCategories(reorderDto: ReorderCategoryDto) {
