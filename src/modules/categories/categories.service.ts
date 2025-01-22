@@ -72,9 +72,22 @@ export class CategoriesService {
     );
   }
 
-  async findAll({ authorId, ids }: { authorId?: number; ids?: number[] } = {}) {
-    return await this.categoriesRepository.find({
-      where: { user: { id: authorId }, id: ids ? In(ids) : undefined },
+  async findAll({
+    authorId,
+    ids,
+    qr,
+  }: {
+    authorId?: number;
+    ids?: number[];
+    qr?: QueryRunner;
+  } = {}) {
+    const repo = this.getCategoryRepository(qr);
+    return await repo.find({
+      where: {
+        user: { id: authorId },
+        id: ids ? In(ids) : undefined,
+        depth: 0,
+      },
       select: {
         id: true,
         pos: true,
@@ -87,7 +100,7 @@ export class CategoriesService {
         children: true,
       },
       relations: ['user', 'children'],
-      order: { pos: 'ASC' },
+      order: { pos: 'ASC', children: { pos: 'ASC' } },
     });
   }
 
@@ -138,30 +151,47 @@ export class CategoriesService {
     }
 
     // 임시 ID와 실제 ID를 매핑할 객체
+    // index, parentId
     const idMapping: Record<number, number> = {};
 
-    // create category input [{id: -1}, {id: -2}, ...]
-    // output [{id: 1}, {id: 2}, ...]
-
-    const added = await repo.save(listToCreate);
+    const added = await repo.save(
+      listToCreate.map((item) => ({
+        ...item,
+        id: undefined,
+        parentId: undefined,
+        children: undefined,
+      })),
+    );
 
     // 임시 ID와 실제 ID 매핑
-    added.forEach((item, index) => {
-      idMapping[listToCreate[index].id] = item.id;
+    added.forEach((cat, index) => {
+      idMapping[listToCreate[index].id] = cat.id;
     });
-    // convert category input [{id: 1, parentId: -1}, {id: 2, parentId: -1}, ...]
-    // output [{id: 1, parentId: 1}, {id: 2, parentId: 1}, ...]
-    console.log(idMapping);
+
+    // reorder
+    const listToUpdateFromAdded = listToCreate
+      .filter((item) => item.parentId !== undefined)
+      .map((item) => ({
+        id: idMapping[item.id],
+        parentId: idMapping[item.parentId] || item.parentId,
+      }));
+
     const categoriesToUpdateWithRealId = categoriesToUpdate.map((item) => ({
       ...item,
       parentId: item.parentId
         ? idMapping[item.parentId] || item.parentId
         : item.parentId,
+      children: undefined,
     }));
     console.log(categoriesToUpdateWithRealId);
-    const updated = await repo.save(categoriesToUpdateWithRealId);
+    const updated = await repo.save([
+      ...listToUpdateFromAdded,
+      ...categoriesToUpdateWithRealId,
+    ]);
 
-    return { deleted, added, updated };
+    const categories = await this.findAll({ authorId: userId, qr });
+
+    return { deleted, added, updated, categories };
   }
 
   async reorderCategories(reorderDto: ReorderCategoryDto) {
