@@ -28,7 +28,7 @@ export class PostPaginationConverter<
     status_id: { where: [['statusId', 'equal']] },
     author_id: { where: [['authorId', 'equal']] },
     // nickname: { where: [['nickname', 'equal']] },
-    category_id: { where: [['categoryId', 'equal']] },
+    category_ids: { where: [['categoryId', 'in']] },
   };
 
   getMappings(): Partial<

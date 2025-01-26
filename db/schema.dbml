@@ -44,7 +44,7 @@ table categories as cate {
   pos integer
   users_id integer [ref: > u.id]
   category_name varchar(150) [not null]
-  level integer [default: 1]
+  depth integer [default: 0]
   post_count integer [default: 0]
   temp_post_count integer [default: 0]
 }

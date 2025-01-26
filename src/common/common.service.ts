@@ -148,13 +148,19 @@ export class CommonService {
     alias: string,
   ) {
     if (Array.isArray(whereList) && whereList.length > 0) {
+      const wrapperfn = (value: string, operator: string) => {
+        if (operator === 'IN') {
+          return `(:...${value})`;
+        }
+        return `:${value}`;
+      };
       whereList.forEach((whereItem, index1) => {
         queryBuilder.andWhere(
           new Brackets((subQb) => {
             whereItem.forEach((whereItem, index2) => {
               const method = index2 === 0 ? 'where' : 'orWhere';
               subQb[method](
-                `${alias}.${String(whereItem.target)} ${whereItem.operator} :${String(whereItem.target)}_${index1}_${index2}`,
+                `${alias}.${String(whereItem.target)} ${whereItem.operator} ${wrapperfn(`${String(whereItem.target)}_${index1}_${index2}`, whereItem.operator)}`,
                 {
                   [`${String(whereItem.target)}_${index1}_${index2}`]:
                     whereItem.value,

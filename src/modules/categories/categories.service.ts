@@ -6,6 +6,7 @@ import { CategoryModel } from './entities/category.entity';
 import { In, QueryRunner, Repository } from 'typeorm';
 import { ReorderCategoryDto } from './dto/reorder-category.dto';
 import { PostStatus } from '../posts/entities/post.entity';
+import { UpdateCategoryListDto } from './dto/update-category-list.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -71,9 +72,22 @@ export class CategoriesService {
     );
   }
 
-  async findAll({ authorId, ids }: { authorId?: number; ids?: number[] } = {}) {
-    return await this.categoriesRepository.find({
-      where: { user: { id: authorId }, id: ids ? In(ids) : undefined },
+  async findAll({
+    authorId,
+    ids,
+    qr,
+  }: {
+    authorId?: number;
+    ids?: number[];
+    qr?: QueryRunner;
+  } = {}) {
+    const repo = this.getCategoryRepository(qr);
+    return await repo.find({
+      where: {
+        user: { id: authorId },
+        id: ids ? In(ids) : undefined,
+        depth: 0,
+      },
       select: {
         id: true,
         pos: true,
@@ -81,9 +95,12 @@ export class CategoriesService {
         user: { id: true },
         postCount: true,
         tempPostCount: true,
+        parentId: true,
+        depth: true,
+        children: true,
       },
-      relations: ['user'],
-      order: { pos: 'ASC' },
+      relations: ['user', 'children'],
+      order: { pos: 'ASC', children: { pos: 'ASC' } },
     });
   }
 
@@ -110,6 +127,71 @@ export class CategoriesService {
 
   remove(id: number) {
     return this.categoriesRepository.delete(id);
+  }
+
+  async updateList(
+    updateCategoryListDto: UpdateCategoryListDto,
+    qr: QueryRunner,
+    userId: number,
+  ) {
+    const { categoryIdsToDelete, categoriesToAdd, categoriesToUpdate } =
+      updateCategoryListDto;
+
+    const listToCreate = categoriesToAdd.map((item) => ({
+      ...item,
+      user: { id: userId },
+    }));
+    const repo = this.getCategoryRepository(qr);
+
+    let deleted;
+    if (categoryIdsToDelete.length > 0) {
+      deleted = await repo.delete(categoryIdsToDelete);
+    } else {
+      deleted = { affected: 0 };
+    }
+
+    // 임시 ID와 실제 ID를 매핑할 객체
+    // index, parentId
+    const idMapping: Record<number, number> = {};
+
+    const added = await repo.save(
+      listToCreate.map((item) => ({
+        ...item,
+        id: undefined,
+        parentId: undefined,
+        children: undefined,
+      })),
+    );
+
+    // 임시 ID와 실제 ID 매핑
+    added.forEach((cat, index) => {
+      idMapping[listToCreate[index].id] = cat.id;
+    });
+
+    // reorder
+    const listToUpdateFromAdded = listToCreate
+      .filter((item) => item.parentId !== undefined)
+      .map((item) => ({
+        id: idMapping[item.id],
+        parentId: idMapping[item.parentId] || item.parentId,
+      }));
+
+    const categoriesToUpdateWithRealId = categoriesToUpdate.map((item) => ({
+      ...item,
+      parentId: item.parentId
+        ? idMapping[item.parentId] || item.parentId
+        : item.parentId,
+      children: undefined,
+    }));
+    console.log(categoriesToUpdateWithRealId);
+    const updated = await repo.save([
+      ...listToUpdateFromAdded,
+      ...categoriesToUpdateWithRealId,
+    ]);
+
+    const categories = await this.findAll({ authorId: userId, qr });
+
+    return { deleted, added, updated, categories };
   }
 
   async reorderCategories(reorderDto: ReorderCategoryDto) {

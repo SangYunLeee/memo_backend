@@ -7,7 +7,7 @@ export type OrderCondition<T extends BaseModel> = {
 
 export type WhereOrCondition<T extends BaseModel> = {
   target: keyof T;
-  value: number | string;
+  value: number | string | number[];
   operator: string;
 }[];
 

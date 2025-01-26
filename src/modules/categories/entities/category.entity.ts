@@ -58,6 +58,22 @@ export class CategoryModel {
   @IsNumber()
   tempPostCount: number;
 
+  @Column({ name: 'parent_cate_id', nullable: true })
+  parentId: number;
+
+  @ManyToOne(() => CategoryModel, category => category.children)
+  @JoinColumn({ name: 'parent_cate_id' })
+  parent: CategoryModel;
+
+  @OneToMany(() => CategoryModel, category => category.parent)
+  children: CategoryModel[];
+
+  @Column({
+    default: 0,
+  })
+  @IsNumber()
+  depth: number;
+
   @OneToMany(() => PostsModel, (post) => post.category)
   posts: PostsModel[];
 }

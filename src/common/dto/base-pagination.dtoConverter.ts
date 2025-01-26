@@ -25,6 +25,7 @@ export class BasePaginationConverter<
     less_than: ['<', (value: string) => value],
     equal: ['=', (value: string) => value],
     include: ['ILIKE', (value: string) => `%${value}%`],
+    in: ['IN', (value: number[]) => value],
   };
 
   getMappings(): Partial<

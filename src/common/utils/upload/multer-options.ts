@@ -7,6 +7,8 @@ import {
 } from './multer-path';
 import * as multer from 'multer';
 import { join } from 'path';
+import { Request } from 'express';
+import { FileFilterCallback } from 'multer';
 
 export const multerOption = {
   // file size limit 100MB
@@ -27,7 +29,11 @@ export const multerOption = {
     destination: ((req, file, cb) => {
       return TEMP_FOLDER_PATH;
     })(),
-    filename: (req, file, cb) => {
+    filename: (
+      req: Request & { user?: { id: string } },
+      file: Express.Multer.File,
+      cb: (error: Error | null, filename: string) => void
+    ) => {
       const now = new Date(Date.now());
       const year = now.getFullYear().toString().slice(2);
       const month = (now.getMonth() + 1).toString().padStart(2, '0');
@@ -54,6 +60,9 @@ export const multerOption = {
       // 파일명 디코딩
       const decodedFilename = decodeURIComponent(file.originalname);
       file.originalname = decodedFilename;
+      if (!req.user) {
+        return cb(new Error('User not found'), '');
+      }
       cb(
         null,
         // file name format: 20210723123456__userId_1__filename_originalname.jpg

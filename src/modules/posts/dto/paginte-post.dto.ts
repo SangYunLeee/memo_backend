@@ -1,5 +1,5 @@
-import { Exclude } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { Exclude, Transform } from 'class-transformer';
+import { IsNumber, IsOptional, IsString, IsArray } from 'class-validator';
 import { BasePaginationDto } from 'src/common/dto/base-pagination.dto';
 import { PostPaginationConverter } from './paginte-post.dtoConverter';
 import { BasePaginationConverter } from 'src/common/dto/base-pagination.dtoConverter';
@@ -31,9 +31,17 @@ export class PaginatePostDto extends BasePaginationDto {
   @IsOptional()
   nickname: string;
 
-  @IsNumber()
+  @IsArray()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      const valueArray = value.split(',');
+      return valueArray.map((v) => Number(v));
+    }
+    return value;
+  })
+  @IsNumber({}, { each: true })
   @IsOptional()
-  category_id: number;
+  category_ids: number[];
 
   @IsNumber()
   @IsOptional()
