@@ -7,7 +7,7 @@ import { CommonService } from './common.service';
   imports: [
     DatabaseModule,
     ConfigModule.forRoot({
-      envFilePath: ['.env', '.env.dev'],
+      envFilePath: ['.env', `.env.${process.env.NODE_ENV || 'dev'}`],
       isGlobal: true,
     }),
   ],

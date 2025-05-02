@@ -12,13 +12,11 @@ services:
       - ../../postgres-data:/var/lib/postgresql/data
   dbmate:
     image: amacneil/dbmate
-    env_file:
-      - ../../.docker.env.local
+    environment:
+      DATABASE_URL: "postgres://postgres:postgres@db:5432/postgres?sslmode=disable"
     command: "--wait up"
     working_dir: /app
     volumes:
       - ../../db:/app/db
     depends_on:
       - db
-    extra_hosts:
-      host.docker.internal: host-gateway

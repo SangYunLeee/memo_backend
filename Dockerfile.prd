@@ -18,7 +18,9 @@ ENV HASH_ROUNDS=7
 ENV BACKEND_PORT=3001
 ENV BACKEND_URL=localhost
 
-ENV DB_HOST=www.entto.shop
+
+# POD 로 주입
+# ENV DB_HOST=www.entto.shop
 ENV DB_PORT=30432
 ENV DB_TYPE=postgres
 ENV DB_USERNAME=postgres
