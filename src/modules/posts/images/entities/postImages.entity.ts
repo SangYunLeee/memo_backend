@@ -46,6 +46,6 @@ export class PostImagesModel {
 
   @Expose()
   get url(): string {
-    return `${process.env.BACKEND_URL}/posts/${this.postId}/files/file/${this.storedFilename}`;
+    return `${process.env.BACKEND_URL}/posts/${this.postId}/images/file/${this.storedFilename}`;
   }
 }

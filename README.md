@@ -30,3 +30,10 @@ dbmate --env-file .env.local down
 # 마이그레이션 실행
 dbmate --env-file .env.local up
 ```
+
+
+## PATH List
+```bash
+# POSTMAN
+https://interstellar-meteor-533643.postman.co/workspace/TEST~349b54f3-0717-4aa6-854d-b4bd86088ecb/collection/4514456-3f466365-40c2-4ab3-9229-921fb00645c3?action=share&creator=4514456
+```
