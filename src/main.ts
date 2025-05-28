@@ -1,11 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-
+import * as cookieParser from 'cookie-parser'; 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
   app.enableCors({
-    origin: '*', // 클라이언트 주소
+    origin: [
+      'http://localhost:3000',
+      'https://memo.entto.shop',
+      '*',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // 모든 HTTP 메소드를 허용
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true,

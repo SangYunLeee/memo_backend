@@ -28,10 +28,13 @@ export class BearerTokenGuard implements CanActivate {
     ]);
     const req = context.switchToHttp().getRequest();
     const rawToken = req.headers['authorization'];
-
-    if (rawToken) {
+    const cookieToken = req.cookies?.['access_token'];
+    const tokenIsExist = rawToken || cookieToken;
+    if (tokenIsExist) {
       try {
-        const token = this.authService.extractTokenFromHeader(rawToken, true);
+        const token = rawToken
+          ? this.authService.extractTokenFromHeader(rawToken, true)
+          : cookieToken;
         const result = await this.authService.verifyToken(token);
         const user = await this.usersService.getUserByEmail(result.email);
 

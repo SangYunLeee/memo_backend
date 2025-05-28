@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
   Patch,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
@@ -15,6 +16,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from '../users/decorator/user.decorator';
+import { Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -47,14 +49,36 @@ export class AuthController {
   @Post('login/email')
   @IsPublic()
   @HttpCode(HttpStatus.OK)
-  loginWithEmail(@Body() user: Pick<UsersModel, 'email' | 'password'>) {
-    return this.authService.loginWithEmail(user);
+  async loginWithEmail(
+    @Body() user: Pick<UsersModel, 'email' | 'password'>,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.loginWithEmail(user);
+    
+    // Access Token 쿠키 설정
+    response.cookie('access_token', result.token.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+    return result;
   }
 
   @Post('register/email')
   @IsPublic()
-  registerWithEmail(@Body() user: RegisterUserDto) {
-    return this.authService.registerWithEmail(user);
+  async registerWithEmail(
+    @Body() user: RegisterUserDto,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.authService.registerWithEmail(user);
+    
+    // Access Token 쿠키 설정
+    response.cookie('access_token', result.token.accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+    return result;
   }
 
   @Patch('password')
