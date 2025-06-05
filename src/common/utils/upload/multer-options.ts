@@ -11,9 +11,9 @@ import { Request } from 'express';
 import { FileFilterCallback } from 'multer';
 
 export const multerOption = {
-  // file size limit 100MB
+  // file size limit 300MB
   limits: {
-    fileSize: 100 * 1024 * 1024,
+    fileSize: 300 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     const isImageUpload = req.path.includes('images');
