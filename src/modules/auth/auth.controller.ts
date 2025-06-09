@@ -8,6 +8,7 @@ import {
   UseGuards,
   Patch,
   Res,
+  Get,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
@@ -91,5 +92,12 @@ export class AuthController {
       password: body.currentPassword,
     });
     return this.authService.updatePassword(user.id, body.newPassword);
+  }
+
+  @IsPublic()
+  @Get('logout')
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('access_token');
+    return { message: 'Logged out successfully' };
   }
 }
