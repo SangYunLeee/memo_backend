@@ -11,8 +11,12 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @IsPublic()
   @Get('me')
   async getMyUser(@User('id') userId: number) {
+    if (!userId) {
+      return { user: null };
+    }
     const user = await this.usersService.getUserById(userId);
     return { user };
   }
