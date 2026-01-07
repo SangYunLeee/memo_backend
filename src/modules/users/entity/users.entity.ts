@@ -8,9 +8,16 @@ import { PostImagesModel } from 'src/modules/posts/images/entities/postImages.en
 import { UserImagesModel } from '../images/entity/usersImages.entity';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
 import { CommentsModel } from 'src/modules/posts/comments/entities/comments.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
+  @ApiProperty({
+    description: '사용자 닉네임',
+    example: 'johndoe',
+    minLength: 3,
+    maxLength: 20,
+  })
   @Column({
     unique: true,
     length: 20,
@@ -19,6 +26,11 @@ export class UsersModel extends BaseModel {
   @Length(3, 20)
   nickname: string;
 
+  @ApiProperty({
+    description: '이메일 주소',
+    example: 'user@example.com',
+    format: 'email',
+  })
   @Column({
     unique: true,
     length: 100,
@@ -26,6 +38,12 @@ export class UsersModel extends BaseModel {
   @IsEmail()
   email: string;
 
+  @ApiProperty({
+    description: '비밀번호',
+    example: 'password123',
+    minLength: 3,
+    maxLength: 20,
+  })
   @Column()
   @IsString()
   @Length(3, 20)

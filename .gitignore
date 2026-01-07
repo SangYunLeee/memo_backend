@@ -38,3 +38,5 @@ lerna-debug.log*
 public
 postgres-data
 db/schema.sql
+
+.claude/settings.local.json
