@@ -1,4 +1,4 @@
-import { applyDecorators, Type } from '@nestjs/common';
+import { applyDecorators, Type, Get, Post, Put, Patch, Delete } from '@nestjs/common';
 import {
   ApiOperation,
   ApiResponse,
@@ -6,11 +6,14 @@ import {
   ApiCookieAuth,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { IsPublic } from './is-public.decorator';
 
 export interface ApiEndpointOptions {
   summary: string;
   description?: string;
-  auth?: 'cookie' | 'bearer' | 'none';
+  method?: 'get' | 'post' | 'put' | 'patch' | 'delete';
+  path?: string;
+  auth?: 'cookie' | 'none';
   body?: {
     type?: Type<any>;
     schema?: any;
@@ -32,6 +35,8 @@ export interface ApiEndpointOptions {
  * @ApiEndpoint({
  *   summary: '이메일 로그인',
  *   description: '이메일과 비밀번호로 로그인합니다.',
+ *   method: 'post',
+ *   path: 'login/email',
  *   auth: 'none',
  *   body: {
  *     schema: {
@@ -50,18 +55,42 @@ export interface ApiEndpointOptions {
  * ```
  */
 export function ApiEndpoint(options: ApiEndpointOptions) {
-  const decorators = [
+  const decorators: any[] = [];
+
+  // HTTP Method 데코레이터 추가
+  if (options.method && options.path !== undefined) {
+    switch (options.method) {
+      case 'get':
+        decorators.push(Get(options.path));
+        break;
+      case 'post':
+        decorators.push(Post(options.path));
+        break;
+      case 'put':
+        decorators.push(Put(options.path));
+        break;
+      case 'patch':
+        decorators.push(Patch(options.path));
+        break;
+      case 'delete':
+        decorators.push(Delete(options.path));
+        break;
+    }
+  }
+
+  // API 문서화 데코레이터
+  decorators.push(
     ApiOperation({
       summary: options.summary,
       description: options.description,
     }),
-  ];
+  );
 
   // 인증 데코레이터 추가
   if (options.auth === 'cookie') {
     decorators.push(ApiCookieAuth('access_token'));
-  } else if (options.auth === 'bearer') {
-    decorators.push(ApiBearerAuth());
+  } else if (options.auth === 'none') {
+    decorators.push(IsPublic());
   }
 
   // Body 데코레이터 추가

@@ -3,19 +3,15 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Post,
   Req,
   UseGuards,
-  Patch,
   Res,
-  Get,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
 import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { User } from '../users/decorator/user.decorator';
 import { Response } from 'express';
@@ -27,32 +23,24 @@ import { AuthApiSpec } from './auth.api-spec';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('token/access')
   @UseGuards(RefreshTokenGuard)
+  @ApiEndpoint(AuthApiSpec.tokenAccess)
   postTokenAccess(@Req() req: { token: string }) {
     const newToken = this.authService.rotateToken(req.token, false);
-    /**
-     * {accessToken: {token}}
-     */
     return {
       accessToken: newToken,
     };
   }
 
-  @Post('token/refresh')
   @UseGuards(RefreshTokenGuard)
+  @ApiEndpoint(AuthApiSpec.tokenRefresh)
   postTokenRefresh(@Req() req: { token: string }) {
     const newToken = this.authService.rotateToken(req.token, true);
-    /**
-     * {refreshToken: {token}}
-     */
     return {
       refreshToken: newToken,
     };
   }
 
-  @Post('login/email')
-  @IsPublic()
   @HttpCode(HttpStatus.OK)
   @ApiEndpoint(AuthApiSpec.loginWithEmail)
   async loginWithEmail(
@@ -70,8 +58,6 @@ export class AuthController {
     return result;
   }
 
-  @Post('register/email')
-  @IsPublic()
   @ApiEndpoint(AuthApiSpec.registerWithEmail)
   async registerWithEmail(
     @Body() user: RegisterUserDto,
@@ -88,7 +74,6 @@ export class AuthController {
     return result;
   }
 
-  @Patch('password')
   @ApiEndpoint(AuthApiSpec.updatePassword)
   async updatePassword(
     @Body() body: UpdatePasswordDto,
@@ -101,8 +86,6 @@ export class AuthController {
     return this.authService.updatePassword(user.id, body.newPassword);
   }
 
-  @IsPublic()
-  @Get('logout')
   @ApiEndpoint(AuthApiSpec.logout)
   async logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('access_token');
