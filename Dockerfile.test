@@ -1,11 +1,7 @@
 FROM node:20-alpine
-
 WORKDIR /app
-
 COPY package*.json .
-
 RUN yarn install --frozen-lockfile
-
 COPY . .
 
 ENV HASH_ROUNDS=7
@@ -23,4 +19,3 @@ ENV DB_DATABASE=postgres
 EXPOSE 3001
 
 CMD ["yarn", "start"]
-
