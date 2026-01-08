@@ -5,6 +5,7 @@ import {
   ApiBody,
   ApiCookieAuth,
   ApiBearerAuth,
+  ApiHeader,
 } from '@nestjs/swagger';
 import { IsPublic } from './is-public.decorator';
 
@@ -23,6 +24,8 @@ export interface ApiEndpointOptions {
     [statusCode: number]: {
       description: string;
       type?: Type<any>;
+      setCookies?: string[];
+      removeCookies?: string[];
     };
   };
 }
@@ -107,13 +110,44 @@ export function ApiEndpoint(options: ApiEndpointOptions) {
   // Response 데코레이터 추가
   if (options.responses) {
     Object.entries(options.responses).forEach(([status, config]) => {
-      decorators.push(
-        ApiResponse({
-          status: Number(status),
-          description: config.description,
-          type: config.type,
-        }),
-      );
+      const responseConfig: any = {
+        status: Number(status),
+        description: config.description,
+        type: config.type,
+      };
+
+      // Set-Cookie 헤더 정보 추가
+      if (config.setCookies && config.setCookies.length > 0) {
+        responseConfig.headers = {
+          'Set-Cookie': {
+            description: `쿠키 설정: ${config.setCookies.join(', ')}`,
+            schema: {
+              type: 'string',
+              example: config.setCookies
+                .map((cookie) => `${cookie}=<value>; HttpOnly; SameSite=Strict`)
+                .join(', '),
+            },
+          },
+        };
+      }
+
+      // Remove-Cookie 헤더 정보 추가 (쿠키 삭제)
+      if (config.removeCookies && config.removeCookies.length > 0) {
+        if (!responseConfig.headers) {
+          responseConfig.headers = {};
+        }
+        responseConfig.headers['Set-Cookie'] = {
+          description: `쿠키 삭제: ${config.removeCookies.join(', ')}`,
+          schema: {
+            type: 'string',
+            example: config.removeCookies
+              .map((cookie) => `${cookie}=; Max-Age=0`)
+              .join(', '),
+          },
+        };
+      }
+
+      decorators.push(ApiResponse(responseConfig));
     });
   }
 
