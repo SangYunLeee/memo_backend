@@ -4,8 +4,6 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import {
   AuthResponseDto,
-  TokenAccessResponseDto,
-  TokenRefreshResponseDto,
   UpdatePasswordResponseDto,
   LogoutResponseDto,
 } from './dto/auth-response.dto';
@@ -14,38 +12,6 @@ import {
  * Auth 모듈 API 스펙 정의
  */
 export const AuthApiSpec = {
-  tokenAccess: {
-    method: 'post',
-    path: 'token/access',
-    summary: 'Access 토큰 갱신',
-    description: 'Refresh 토큰으로 새로운 Access 토큰을 발급받습니다.',
-    auth: 'cookie',
-    responses: {
-      200: {
-        description: 'Access 토큰 발급 성공',
-        type: TokenAccessResponseDto,
-        setCookies: ['access_token'],
-      },
-      401: { description: '유효하지 않은 Refresh 토큰' },
-    },
-  },
-
-  tokenRefresh: {
-    method: 'post',
-    path: 'token/refresh',
-    summary: 'Refresh 토큰 갱신',
-    description: 'Refresh 토큰으로 새로운 Refresh 토큰을 발급받습니다.',
-    auth: 'cookie',
-    responses: {
-      200: {
-        description: 'Refresh 토큰 발급 성공',
-        type: TokenRefreshResponseDto,
-        setCookies: ['refresh_token'],
-      },
-      401: { description: '유효하지 않은 Refresh 토큰' },
-    },
-  },
-
   loginWithEmail: {
     method: 'post',
     path: 'login/email',

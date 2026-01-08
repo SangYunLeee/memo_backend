@@ -10,17 +10,3 @@ export function setAccessTokenCookie(response: Response, accessToken: string) {
     sameSite: 'strict',
   });
 }
-
-/**
- * Refresh Token을 쿠키에 설정합니다.
- */
-export function setRefreshTokenCookie(
-  response: Response,
-  refreshToken: string,
-) {
-  response.cookie('refresh_token', refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: 'strict',
-  });
-}

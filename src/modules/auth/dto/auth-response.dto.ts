@@ -4,9 +4,6 @@ import { UsersModel } from 'src/modules/users/entity/users.entity';
 export class TokenDto {
   @ApiProperty({ description: 'Access Token', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
   accessToken: string;
-
-  @ApiProperty({ description: 'Refresh Token', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
-  refreshToken: string;
 }
 
 export class AuthResponseDto {
@@ -15,16 +12,6 @@ export class AuthResponseDto {
 
   @ApiProperty({ description: '토큰 정보', type: TokenDto })
   token: TokenDto;
-}
-
-export class TokenAccessResponseDto {
-  @ApiProperty({ description: 'Access Token', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
-  accessToken: string;
-}
-
-export class TokenRefreshResponseDto {
-  @ApiProperty({ description: 'Refresh Token', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' })
-  refreshToken: string;
 }
 
 export class UpdatePasswordResponseDto {

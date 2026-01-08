@@ -3,14 +3,11 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
-  Req,
-  UseGuards,
   Res,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { UsersModel } from 'src/modules/users/entity/users.entity';
-import { RefreshTokenGuard } from './guard/bearer-token.guard';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { LoginDto } from './dto/login.dto';
@@ -18,43 +15,12 @@ import { User } from '../users/decorator/user.decorator';
 import { Response } from 'express';
 import { ApiEndpoint } from 'src/common/decorator/api-docs.decorator';
 import { AuthApiSpec } from './auth.api-spec';
-import {
-  setAccessTokenCookie,
-  setRefreshTokenCookie,
-} from './utils/cookie.helper';
+import { setAccessTokenCookie } from './utils/cookie.helper';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @UseGuards(RefreshTokenGuard)
-  @ApiEndpoint(AuthApiSpec.tokenAccess)
-  postTokenAccess(
-    @Req() req: { token: string },
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const newToken = this.authService.rotateToken(req.token, false);
-
-    setAccessTokenCookie(response, newToken);
-    return {
-      accessToken: newToken,
-    };
-  }
-
-  @UseGuards(RefreshTokenGuard)
-  @ApiEndpoint(AuthApiSpec.tokenRefresh)
-  postTokenRefresh(
-    @Req() req: { token: string },
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const newToken = this.authService.rotateToken(req.token, true);
-
-    setRefreshTokenCookie(response, newToken);
-    return {
-      refreshToken: newToken,
-    };
-  }
 
   @HttpCode(HttpStatus.OK)
   @ApiEndpoint(AuthApiSpec.loginWithEmail)
