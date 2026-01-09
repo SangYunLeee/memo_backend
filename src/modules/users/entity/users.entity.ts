@@ -1,35 +1,24 @@
 import { Column, Entity, ManyToMany, OneToMany, OneToOne } from 'typeorm';
 import { RolesEnum } from '../const/roles.const';
 import { BaseModel } from 'src/common/entity/base.entity';
-import { IsEmail, IsOptional, IsString, Length } from 'class-validator';
-import { Exclude, Expose } from 'class-transformer';
+import { IsString } from 'class-validator';
+import { Expose } from 'class-transformer';
 import { PostsModel } from 'src/modules/posts/entities/post.entity';
 import { PostImagesModel } from 'src/modules/posts/images/entities/postImages.entity';
 import { UserImagesModel } from '../images/entity/usersImages.entity';
 import { UpdateProfileDto } from '../dto/update-profile.dto';
 import { CommentsModel } from 'src/modules/posts/comments/entities/comments.entity';
+import { Nickname, Email, Password } from 'src/common/decorator/entity-field.decorator';
 
 @Entity('users')
 export class UsersModel extends BaseModel {
-  @Column({
-    unique: true,
-    length: 20,
-  })
-  @IsString()
-  @Length(3, 20)
+  @Nickname()
   nickname: string;
 
-  @Column({
-    unique: true,
-    length: 100,
-  })
-  @IsEmail()
+  @Email()
   email: string;
 
-  @Column()
-  @IsString()
-  @Length(3, 20)
-  @Exclude({ toPlainOnly: true })
+  @Password()
   password: string;
 
   @Column({

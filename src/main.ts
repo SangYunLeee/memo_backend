@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser'; 
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser());
@@ -25,7 +27,28 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
     }),
   );
+
+  // Swagger 설정
+  const config = new DocumentBuilder()
+    .setTitle('Memo Backend API')
+    .setDescription('Memo 백엔드 API 문서')
+    .setVersion('1.0')
+    .addCookieAuth('access_token', {
+      type: 'apiKey',
+      in: 'cookie',
+      name: 'access_token',
+    })
+    .addTag('auth', '인증 관련 API')
+    .addTag('users', '사용자 관련 API')
+    .addTag('posts', '게시글 관련 API')
+    .addTag('comments', '댓글 관련 API')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
   await app.listen(process.env.BACKEND_PORT || 3001);
   console.log(`Application is running on: ${await app.getUrl()}`);
+  console.log(`API Documentation available at: ${await app.getUrl()}/api-docs`); // /api-docs-json
 }
 bootstrap();

@@ -1,8 +1,12 @@
-import { PickType } from '@nestjs/mapped-types';
-import { UsersModel } from 'src/modules/users/entity/users.entity';
+import { Nickname, Email, Password } from 'src/common/decorator/entity-field.decorator';
 
-export class RegisterUserDto extends PickType(UsersModel, [
-  'nickname',
-  'email',
-  'password',
-]) {}
+export class RegisterUserDto {
+  @Nickname()
+  nickname: string;
+
+  @Email()
+  email: string;
+
+  @Password()
+  password: string;
+}

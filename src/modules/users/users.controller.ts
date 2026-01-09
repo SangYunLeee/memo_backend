@@ -1,18 +1,17 @@
-import { Body, Controller, Patch } from '@nestjs/common';
+import { Body, Controller, Param } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
-import { UsersModel } from './entity/users.entity';
-import { Get, Param, UseGuards } from '@nestjs/common';
 import { User } from './decorator/user.decorator';
-import { AccessTokenGuard } from '../auth/guard/bearer-token.guard';
-import { IsPublic } from 'src/common/decorator/is-public.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { ApiEndpoint } from 'src/common/decorator/api-docs.decorator';
+import { UsersApiSpec } from './users.api-spec';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @IsPublic()
-  @Get('me')
+  @ApiEndpoint(UsersApiSpec.getMe)
   async getMyUser(@User('id') userId: number) {
     if (!userId) {
       return { user: null };
@@ -21,22 +20,19 @@ export class UsersController {
     return { user };
   }
 
-  @Get(':id')
+  @ApiEndpoint(UsersApiSpec.getUserById)
   async getUserById(@Param('id') id: number) {
     const user = await this.usersService.getUserById(id);
     return { user };
   }
 
-  @IsPublic()
-  @Get('nickname/:nickname')
+  @ApiEndpoint(UsersApiSpec.getUserByNickname)
   async getUserByNickname(@Param('nickname') nickname: string) {
-    console.log('nickname:', nickname);
     const user = await this.usersService.getUserByNickname(nickname);
-    console.log('user: ', user);
     return { user };
   }
 
-  @Patch('me/profile')
+  @ApiEndpoint(UsersApiSpec.updateMyProfile)
   async updateMyProfileInfo(
     @User('id') userId: number,
     @Body() updateDto: UpdateProfileDto,

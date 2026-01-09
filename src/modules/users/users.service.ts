@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersModel } from './entity/users.entity';
 import { In, Repository } from 'typeorm';
@@ -65,7 +65,7 @@ export class UsersService {
   async getUserById(userId: number): Promise<UsersModel> {
     const users = await this.getUsersWithProfileImage({ userIds: [userId] });
     if (users.length === 0) {
-      throw new BadRequestException('존재하지 않는 사용자입니다.');
+      throw new NotFoundException('존재하지 않는 사용자입니다.');
     }
     return users[0];
   }
@@ -77,7 +77,7 @@ export class UsersService {
   async getUserByNickname(nickname: string): Promise<UsersModel> {
     const users = await this.getUsersWithProfileImage({ nickname });
     if (users.length === 0) {
-      throw new BadRequestException('존재하지 않는 닉네임입니다.');
+      throw new NotFoundException('존재하지 않는 닉네임입니다.');
     }
     return users[0];
   }
@@ -85,7 +85,7 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<UsersModel> {
     const users = await this.getUsersWithProfileImage({ email });
     if (users.length === 0) {
-      throw new BadRequestException('존재하지 않는 이메일입니다.');
+      throw new NotFoundException('존재하지 않는 이메일입니다.');
     }
     return users[0];
   }
@@ -93,7 +93,7 @@ export class UsersService {
   async updateProfileInfo(userId: number, updateDto: UpdateProfileDto) {
     const user = await this.usersRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new Error('사용자를 찾을 수 없습니다.');
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
 
     if (updateDto.nickname !== user.nickname) {
@@ -113,7 +113,7 @@ export class UsersService {
   async updatePassword(userId: number, newPassword: string) {
     const user = await this.usersRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new Error('사용자를 찾을 수 없습니다.');
+      throw new NotFoundException('사용자를 찾을 수 없습니다.');
     }
     user.password = newPassword;
     this.usersRepository.save(user);
