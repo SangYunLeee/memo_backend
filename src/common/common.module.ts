@@ -5,11 +5,11 @@ import { CommonService } from './common.service';
 
 @Module({
   imports: [
-    DatabaseModule,
     ConfigModule.forRoot({
-      envFilePath: ['.env', `.env.${process.env.NODE_ENV || 'dev'}`],
+      envFilePath: [`.env.${process.env.NODE_ENV}`],
       isGlobal: true,
     }),
+    DatabaseModule,
   ],
   controllers: [],
   providers: [CommonService],

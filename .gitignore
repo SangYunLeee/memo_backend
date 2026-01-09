@@ -39,3 +39,6 @@ postgres-data
 db/schema.sql
 
 .claude/settings.local.json
+
+# Local environment files
+.env.local.dev
